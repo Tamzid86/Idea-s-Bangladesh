@@ -15,7 +15,9 @@ const app = express();
 
 // Middleware
 app.use(session({
-  secret: 'human'}))
+  secret: 'human',
+  resave: false,                
+  saveUninitialized: false}))
 app.use(Passport.initialize());
 app.use(Passport.session());
 

@@ -4,6 +4,7 @@ module.exports = {
       fontFamily: {
         nunito: ['Nunito', 'sans-serif'],
       },
+      colors: require('tailwindcss/colors'),
     },
   },
   content: [

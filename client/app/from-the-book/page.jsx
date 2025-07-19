@@ -1,9 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, X, Image as ImageIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ArrowUpRight, Image as ImageIcon, ThumbsUp, Share2, X  } from "lucide-react";
 import axios from "axios";
 import Footer from "../../components/Footer/page";
+// import BlogCard from "../../components/BlogCard/page";
+import SubscribeButton from "../../components/SubscribeButton/page";
 
 // Pagination component
 function Pagination({ page, totalPages, onPageChange }) {
@@ -104,35 +107,124 @@ export default function FromBookPage() {
   };
 
   // Blog Card (original design)
-  function BlogCard({ blog }) {
-    return (
+function BlogCard({ blog, handleShowSummary }) {
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+
+  // Button click handler
+  const handleRead = () => {
+    const subscriberEmail =
+      typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
+    const subscriberName =
+      typeof window !== "undefined" && localStorage.getItem("subscriberName");
+    if (subscriberEmail && subscriberName) {
+      router.push(`/from-the-book/${blog._id}`);
+    } else {
+      setShowModal(true);
+    }
+  };
+
+  // Share handler
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/from-the-book/${blog._id}`;
+    const shareData = {
+      title: blog.title,
+      text: blog.summary,
+      url: shareUrl,
+    };
+
+    // Try native share dialog first (mobile & some browsers)
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+        return;
+      } catch (err) {
+        // Fallback to copy
+      }
+    }
+    // Fallback: Copy to clipboard
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 1500);
+    } catch (err) {
+      alert("Link: " + shareUrl);
+    }
+  };
+
+  return (
+    <>
       <motion.div
-        variants={cardVariant}
-        whileHover={{ y: -3, boxShadow: "0 8px 32px rgba(30,100,60,0.09)" }}
-        className="flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48"
+        variants={{
+          hidden: { opacity: 0, y: 24 },
+          show: {
+            opacity: 1,
+            y: 0,
+            transition: { type: "spring", stiffness: 120, damping: 18 },
+          },
+        }}
+        whileHover={{
+          y: -3,
+          boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
+        }}
+        className={`flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48`}
         style={{ minHeight: "12rem", height: "12rem" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
-        {/* Image or placeholder */}
-        <div className="w-full md:w-48 lg:w-56 h-48 flex-shrink-0 bg-gray-100 flex items-center justify-center">
-          {blog.imageUrl ? (
-            <img
-              src={blog.imageUrl}
-              alt={blog.title}
-              className="w-full h-full object-cover object-center"
+        {/* Image or Placeholder */}
+         <div
+              className="md:w-48 lg:w-56 h-48 flex-shrink-0 flex items-center justify-center p-0 m-0"
               style={{
+                width: "12rem",
+                height: "12rem",
                 minWidth: "12rem",
                 maxWidth: "12rem",
                 minHeight: "12rem",
                 maxHeight: "12rem",
+                padding: 0,
+                margin: 0
               }}
-            />
-          ) : (
-            <span className="flex flex-col items-center justify-center w-full h-full text-gray-400 text-2xl">
-              <ImageIcon size={36} className="mx-auto mb-2" />
-              No Image
-            </span>
-          )}
-        </div>
+            >
+              {blog.imageUrl ? (
+                <img
+                  src={blog.imageUrl}
+                  alt={blog.title}
+                  className="w-full h-full object-cover object-center rounded-none"
+                  style={{
+                    width: "12rem",
+                    height: "12rem",
+                    minWidth: "12rem",
+                    maxWidth: "12rem",
+                    minHeight: "12rem",
+                    maxHeight: "12rem",
+                  }}
+                />
+              ) : (
+                <div
+                  className="flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200"
+                  style={{
+                    width: "12rem",
+                    height: "12rem",
+                    fontWeight: 700,
+                    fontSize: "3rem",
+                    color: "#2b5040",
+                    letterSpacing: "1px",
+                    textTransform: "uppercase",
+                    borderRadius: "0.75rem",
+                    padding: 0,
+                    margin: 0
+                  }}
+                  aria-label="Placeholder image"
+                >
+                  {blog.title?.[0] || "B"}
+                </div>
+              )}
+            </div>
+
+        {/* Blog Content */}
         <div className="p-4 md:p-6 flex flex-col flex-1 min-w-0">
           <div>
             <div className="flex items-center gap-3 mb-1">
@@ -154,26 +246,92 @@ export default function FromBookPage() {
                 </span>
               )}
             </div>
-            <h3 className="font-bold text-lg md:text-xl mb-1">{blog.title}</h3>
-            <p className="text-gray-700 text-sm mb-4 line-clamp-2">{blog.summary}</p>
+            <h3
+              className="font-bold text-lg md:text-xl mb-1 transition-colors duration-200 line-clamp-1"
+              style={{ color: hovered ? "#9bcbb2" : "#191919" }}
+            >
+              {blog.title}
+            </h3>
+            <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+              {blog.summary}
+            </p>
           </div>
-          <div className="flex gap-2 mt-auto">
+          <div className="flex gap-2 mt-auto flex-wrap">
             <button
               className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
               onClick={() => handleShowSummary(blog.summary)}
             >
               Read Summary
             </button>
-            <button className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm">
+            <button
+              className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm"
+              onClick={handleRead}
+            >
               Read Full Article
               <ArrowUpRight size={16} />
             </button>
+            <div className="relative">
+              <button
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
+                onClick={handleShare}
+                aria-label="Share"
+              >
+                <Share2 size={18} />
+                Share
+              </button>
+              {shareCopied && (
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
+                  Link Copied!
+                </span>
+              )}
+            </div>
           </div>
         </div>
       </motion.div>
-    );
-  }
 
+      {/* Subscribe Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+              onClick={() => setShowModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-8 w-full max-w-md"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-green-700">
+                  Subscribe Required
+                </h2>
+                <button onClick={() => setShowModal(false)}>
+                  <X size={26} className="text-gray-400 hover:text-green-700" />
+                </button>
+              </div>
+              <p className="text-gray-700 mb-6">
+                You need to subscribe to read the full article. Please subscribe
+                to get access to exclusive content!
+              </p>
+              <div
+                className="w-full py-2 rounded font-bold transition"
+                onClick={() => setShowModal(false)}
+              >
+                <SubscribeButton />
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
   return (
     <div className="min-h-screen bg-[#f9fdfa] font-[Nunito]">
       {/* HEADER */}
@@ -244,7 +402,7 @@ export default function FromBookPage() {
               No blogs found.
             </div>
           ) : (
-            paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} />)
+            paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} />)
           )}
         </div>
         {/* RIGHT: ADS */}

@@ -120,7 +120,7 @@ export default function AdminAdsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f5faf7] font-[Nunito] px-4 py-10">
+    <div className="min-h-screen bg-[#f5faf7] font-[Nunito] px-4 py-10 ">
       {/* Header */}
      <div className="flex items-center justify-between max-w-4xl mx-auto mb-10">
       {/* Back button */}

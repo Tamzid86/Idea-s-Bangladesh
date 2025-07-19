@@ -20,7 +20,7 @@ export default function Footer() {
             <div className="font-semibold mb-2">Categories</div>
             <ul className="space-y-1 text-gray-300">
               <li><a href="/from-the-book" className="hover:text-green-400">From the Book</a></li>
-              <li><a href="/popular-ideas" className="hover:text-green-400">Popular Ideas</a></li>
+              <li><a href="/idea" className="hover:text-green-400">Reader's Innovations</a></li>
               <li><a href="/idea-submission" className="hover:text-green-400">Submit Ideas</a></li>
             </ul>
           </div>

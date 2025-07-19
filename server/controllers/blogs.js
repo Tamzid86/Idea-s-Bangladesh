@@ -136,5 +136,14 @@ const deleteBlog = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const getBlogById = async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
+    res.status(200).json(blog);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
-module.exports = { createBlog, getBlogs, likeBlog, unlikeBlog, updateBlog, deleteBlog };
+module.exports = { createBlog, getBlogs, likeBlog, unlikeBlog, updateBlog, deleteBlog, getBlogById };

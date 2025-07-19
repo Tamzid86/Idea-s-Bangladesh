@@ -1,27 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UploadCloud, X, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
-
-// Navbar (reuse everywhere)
-function Navbar() {
-  return (
-          <nav className="flex justify-between items-center py-4 px-40 bg-white shadow-sm sticky top-0 z-50">
-        <div className="bg-gradient-to-r from-[#95C9AC] to-[#C5F8C8] bg-clip-text text-transparent text-2xl font-extrabold">Idea&apos;s Bangladesh</div>
-        <div className="space-x-8 hidden md:flex">
-          <a href="/home" className="hover:text-[#95C9AC] font-medium transition">Home</a>
-          <a href="/about" className="hover:text-[#95C9AC] font-medium transition">About</a>
-          <a href="/contact" className="hover:text-[#95C9AC] font-medium transition">Contact</a>
-        </div>
-        <motion.button
-          whileHover={{ scale: 1.07 }}
-          className="bg-[#91C5A9] text-black px-5 py-1 rounded transition font-medium hover:bg-green-400"
-        >
-          Subscribe
-        </motion.button>
-      </nav>
-  );
-}
+import Navbar from "../../components/Navbar/page";
 
 export default function SubmitIdeaPage() {
   const [image, setImage] = useState(null);
@@ -29,7 +10,14 @@ export default function SubmitIdeaPage() {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [subscriberName, setSubscriberName] = useState("");
   const fileRef = useRef();
+
+  // Check subscription on mount
+  useEffect(() => {
+    const name = localStorage.getItem("subscriberName");
+    setSubscriberName(name || "");
+  }, []);
 
   // Image preview
   const handleImageChange = (e) => {
@@ -60,6 +48,7 @@ export default function SubmitIdeaPage() {
       const formData = new FormData();
       formData.append("title", e.target.title.value);
       formData.append("description", e.target.description.value);
+      formData.append("author", subscriberName); // Attach author
       if (image) formData.append("image", image);
 
       const res = await fetch("http://localhost:5000/api/submit-idea", {
@@ -87,10 +76,35 @@ export default function SubmitIdeaPage() {
     }
   };
 
+  // If not subscribed, block form and prompt user
+  if (!subscriberName) {
+    return (
+      <div className="bg-[#EDF4EE] min-h-screen font-[Nunito] flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white p-8 rounded-2xl shadow-lg border border-green-100 text-center"
+          >
+            <AlertTriangle size={40} className="mx-auto mb-3 text-yellow-500" />
+            <div className="text-lg font-bold mb-1 text-gray-800">
+              You must subscribe before submitting your idea!
+            </div>
+            <div className="text-gray-600 mb-4">
+              Please subscribe with your email to share your idea.
+            </div>
+            {/* Optionally: add a subscribe button/link here */}
+          </motion.div>
+        </div>
+      </div>
+    );
+  }
+
+  // If subscribed, show the form as before
   return (
     <div className="bg-[#EDF4EE] min-h-screen font-[Nunito]">
       <Navbar />
-      {/* Page container */}
       <div className="pt-28 pb-16 px-3 min-h-screen flex flex-col items-center">
         <motion.div
           initial={{ opacity: 0, y: 32 }}
@@ -134,7 +148,7 @@ export default function SubmitIdeaPage() {
                 name="title"
                 type="text"
                 required
-                placeholder="Enter a catchy title"
+                placeholder="Enter a title"
                 className="w-full px-4 py-3 rounded-lg border border-green-100 focus:border-[#7ED6B2] focus:ring-2 focus:ring-[#D6F3E9] bg-green-50/30 transition"
               />
             </div>

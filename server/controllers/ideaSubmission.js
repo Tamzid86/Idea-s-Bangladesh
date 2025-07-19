@@ -3,11 +3,18 @@ const Idea = require('../models/UserIdea');
 // User submits an idea
 const submitIdea = async (req, res) => {
   try {
-    const { title, description } = req.body;
+    const { title, description, author } = req.body; 
     let imageUrl = null;
     if (req.file && req.file.path) imageUrl = req.file.path;
 
-    const newIdea = new Idea({ title, description, imageUrl, status: "pending" });
+    const newIdea = new Idea({
+      title,
+      description,
+      imageUrl,
+      author, 
+      status: "pending"
+    });
+
     await newIdea.save();
     res.status(201).json({ message: "Idea submitted for review!", idea: newIdea });
   } catch (error) {
@@ -57,6 +64,19 @@ const getApprovedIdeas = async (req, res) => {
   }
 };
 
+const getApprovedIdea = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const idea = await Idea.findById(id);
+    if (!idea || idea.status !== "approved") {
+      return res.status(404).json({ message: "Approved idea not found" });
+    }
+    res.json(idea);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to get approved idea", error: error.message });
+  }
+};
+
 // Like a blog post
 const likeBlog = async (req, res) => {
   try {
@@ -93,4 +113,4 @@ const deleteIdea = async (req, res) => {
   }
 };
 
-module.exports = { submitIdea, getPendingIdeas, approveIdea, rejectIdea, getApprovedIdeas, likeBlog, unlikeBlog, deleteIdea };
+module.exports = { submitIdea, getPendingIdeas, approveIdea, rejectIdea, getApprovedIdeas, getApprovedIdea, likeBlog, unlikeBlog, deleteIdea };

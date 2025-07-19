@@ -18,16 +18,22 @@ export default function SubscribeButton() {
     <div>
     {subscriberName ? (
         <div className="font-bold text-green-700">
-          Hello, {subscriberName}!
+          Welcome, {subscriberName}!
         </div>
       ) :(
         <Link href="http://localhost:5000/api/google">
             <motion.button
-              whileHover={{ scale: 1.07 }}
-              className="bg-[#91C5A9] text-black px-5 py-1 rounded transition font-medium hover:bg-green-400"
+              whileHover={{
+                scale: 1.07,
+                boxShadow: "0 8px 24px 0 rgba(34, 197, 94, 0.18)"
+              }}
+              className="bg-gradient-to-r from-[#91C5A9] via-[#7EE8A7] to-[#74eecb] 
+                        text-black px-7 py-2 rounded-2xl font-semibold shadow-lg 
+                        transition-all duration-200 hover:from-[#74eecb] hover:to-[#91C5A9] 
+                        hover:shadow-green-200/40 border border-green-200"
             >
               Subscribe
-            </motion.button>
+          </motion.button>
           </Link>
       )}
 
