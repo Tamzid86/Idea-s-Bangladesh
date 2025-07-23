@@ -36,14 +36,16 @@ const blogSchema = mongoose.Schema(
    author: {
        type: String,
        default: "Admin",
-
        required: true
    },
    read_time: {
        type: String,
        default: null        
-   }
-    },
+   },
+   category: {
+       type: String,
+       default: null
+   }},
      {
          timestamps: true
      }

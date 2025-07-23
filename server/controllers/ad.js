@@ -1,31 +1,43 @@
 const Ad = require('../models/Ad');
-
 const cloudinary = require('../cloudinary'); 
 const streamifier = require("streamifier");
 
+// Helper for Cloudinary upload from buffer (memory storage)
+const uploadToCloudinary = async (file) => {
+  if (!file || !file.buffer) return null;
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream((error, result) => {
+      if (result) resolve(result.secure_url);
+      else reject(error);
+    });
+    streamifier.createReadStream(file.buffer).pipe(stream);
+  });
+};
+
 const createAd = async (req, res) => {
   try {
-    const { title, description, link } = req.body;
-    if (!title || !description || !link) {
-      return res.status(400).json({ message: "Title, description, and link are required" });
+    const { title, description, link, daysActive } = req.body;
+    if (!title || !description || !link || !daysActive) {
+      return res.status(400).json({ message: "Title, description, link, and daysActive are required" });
     }
 
-    let imageUrl = null;
-
-    if (req.file && req.file.path) {
-      imageUrl = req.file.path; // Cloudinary image URL is here!
+    let imageUrl = req.body.imageUrl || null;
+    if (req.file && req.file.buffer) {
+      imageUrl = await uploadToCloudinary(req.file);
+    } else if (req.file && req.file.path) {
+      imageUrl = req.file.path;
     }
 
-    const newAd = new Ad({ title, description, link, imageUrl });
-    await newAd.save();
+    const expiresAt = new Date(Date.now() + parseInt(daysActive) * 24 * 60 * 60 * 1000);
 
-    res.status(201).json(newAd);
-  } catch (error) {
-    console.error("Create ad error:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
+    const ad = new Ad({ title, description, imageUrl, link, expiresAt });
+    await ad.save();
+    res.status(201).json(ad);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to create ad", error: err.message });
   }
 };
-// GET ALL ADS (optional)
+
 const getAds = async (req, res) => {
   try {
     const ads = await Ad.find().sort({ createdAt: -1 });
@@ -48,13 +60,20 @@ const deleteAd = async (req, res) => {
 const updateAd = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, link } = req.body;
+    const { title, description, link, daysActive } = req.body;
 
     if (!title || !description || !link) {
       return res.status(400).json({ message: "Title, description, and link are required" });
     }
     const updateFields = { title, description, link };
-    if (req.file && req.file.path) {
+
+    if (daysActive) {
+      updateFields.expiresAt = new Date(Date.now() + parseInt(daysActive) * 24 * 60 * 60 * 1000);
+    }
+
+    if (req.file && req.file.buffer) {
+      updateFields.imageUrl = await uploadToCloudinary(req.file);
+    } else if (req.file && req.file.path) {
       updateFields.imageUrl = req.file.path;
     }
 

@@ -86,7 +86,8 @@ export default function FromBookPage() {
 
   // Filtering and Pagination
   const filteredBlogs = blogs.filter((blog) =>
-    blog.title?.toLowerCase().includes(search.toLowerCase())
+    blog.title?.toLowerCase().includes(search.toLowerCase())||
+    blog.category?.toLowerCase().includes(search.toLowerCase())
   );
   const blogsPerPage = 5;
   const totalPages = Math.ceil(filteredBlogs.length / blogsPerPage);
@@ -169,14 +170,30 @@ function BlogCard({ blog, handleShowSummary }) {
           y: -3,
           boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
         }}
-        className={`flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48`}
+        className="flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48"
         style={{ minHeight: "12rem", height: "12rem" }}
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         {/* Image or Placeholder */}
-         <div
-              className="md:w-48 lg:w-56 h-48 flex-shrink-0 flex items-center justify-center p-0 m-0"
+        <div
+          className="md:w-48 lg:w-56 h-48 flex-shrink-0 flex items-center justify-center p-0 m-0"
+          style={{
+            width: "12rem",
+            height: "12rem",
+            minWidth: "12rem",
+            maxWidth: "12rem",
+            minHeight: "12rem",
+            maxHeight: "12rem",
+            padding: 0,
+            margin: 0,
+          }}
+        >
+          {blog.imageUrl ? (
+            <img
+              src={blog.imageUrl}
+              alt={blog.title}
+              className="w-full h-full object-cover object-center rounded-none"
               style={{
                 width: "12rem",
                 height: "12rem",
@@ -184,53 +201,43 @@ function BlogCard({ blog, handleShowSummary }) {
                 maxWidth: "12rem",
                 minHeight: "12rem",
                 maxHeight: "12rem",
-                padding: 0,
-                margin: 0
               }}
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200"
+              style={{
+                width: "12rem",
+                height: "12rem",
+                fontWeight: 700,
+                fontSize: "3rem",
+                color: "#2b5040",
+                letterSpacing: "1px",
+                textTransform: "uppercase",
+                borderRadius: "0.75rem",
+                padding: 0,
+                margin: 0,
+              }}
+              aria-label="Placeholder image"
             >
-              {blog.imageUrl ? (
-                <img
-                  src={blog.imageUrl}
-                  alt={blog.title}
-                  className="w-full h-full object-cover object-center rounded-none"
-                  style={{
-                    width: "12rem",
-                    height: "12rem",
-                    minWidth: "12rem",
-                    maxWidth: "12rem",
-                    minHeight: "12rem",
-                    maxHeight: "12rem",
-                  }}
-                />
-              ) : (
-                <div
-                  className="flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200"
-                  style={{
-                    width: "12rem",
-                    height: "12rem",
-                    fontWeight: 700,
-                    fontSize: "3rem",
-                    color: "#2b5040",
-                    letterSpacing: "1px",
-                    textTransform: "uppercase",
-                    borderRadius: "0.75rem",
-                    padding: 0,
-                    margin: 0
-                  }}
-                  aria-label="Placeholder image"
-                >
-                  {blog.title?.[0] || "B"}
-                </div>
-              )}
+              {blog.title?.[0] || "B"}
             </div>
+          )}
+        </div>
 
         {/* Blog Content */}
         <div className="p-4 md:p-6 flex flex-col flex-1 min-w-0">
           <div>
-            <div className="flex items-center gap-3 mb-1">
+            <div className="flex items-center gap-3 mb-1 flex-wrap">
               <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
                 {blog.author || "Admin"}
               </span>
+              {/* CATEGORY BADGE */}
+              {blog.category && (
+                <span className="bg-green-50 text-green-800 text-xs px-3 py-1 rounded-full font-semibold border border-green-100">
+                  {blog.category}
+                </span>
+              )}
               {blog.read_time && (
                 <span className="text-gray-400 text-xs flex items-center gap-1">
                   <svg width="15" height="15" fill="none" className="inline">
@@ -332,6 +339,7 @@ function BlogCard({ blog, handleShowSummary }) {
     </>
   );
 }
+
   return (
     <div className="min-h-screen bg-[#f9fdfa] font-[Nunito]">
       {/* HEADER */}

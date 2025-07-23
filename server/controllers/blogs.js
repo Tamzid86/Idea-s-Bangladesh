@@ -1,11 +1,14 @@
 const Blog = require("../models/Blog");
+const Category = require("../models/Category");
 const cloudinary = require("../cloudinary");
 const streamifier = require("streamifier");
+const { get } = require("mongoose");
+const Subscriber = require("../models/Subscriber");
 
 // Create a new blog
 const createBlog = async (req, res) => {
   try {
-    const { title, description, summary, author, read_time } = req.body;
+    const { title, description, summary, author, read_time, category } = req.body;
     if (!title || !description || !summary) {
       return res.status(400).json({ message: "Title, description, and summary are required" });
     }
@@ -34,6 +37,7 @@ const createBlog = async (req, res) => {
       summary,
       author: author || "Admin",
       read_time: read_time || null,
+      category: category || null,
       imageUrl,
     });
     await newBlog.save();
@@ -85,7 +89,7 @@ const unlikeBlog = async (req, res) => {
 const updateBlog = async (req, res) => {
   try {
     const { id } = req.params;
-    const { title, description, summary, author, read_time } = req.body;
+    const { title, description, summary, author, read_time, category } = req.body;
 
     if (!title || !description || !summary) {
       return res.status(400).json({ message: "Title, description, and summary are required" });
@@ -97,6 +101,7 @@ const updateBlog = async (req, res) => {
       summary,
       author: author || "Admin",
       read_time: read_time || null,
+      category: category || null,
       updatedAt: new Date(),
     };
 
@@ -146,4 +151,67 @@ const getBlogById = async (req, res) => {
   }
 };
 
-module.exports = { createBlog, getBlogs, likeBlog, unlikeBlog, updateBlog, deleteBlog, getBlogById };
+const createCategory = async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ message: "Category name is required" });
+    }
+    const newCategory = new Category({ name });
+    await newCategory.save();
+    res.status(201).json(newCategory);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+}
+
+const deleteCategory = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const deletedCategory = await Category.findByIdAndDelete(id);
+    if (!deletedCategory) return res.status(404).json({ message: "Category not found" });
+    res.status(200).json({ message: "Category deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const getCategoryById = async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) return res.status(404).json({ message: "Category not found" });
+    res.status(200).json(category);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const getAllCategories = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    res.status(200).json(categories);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const showAllSubscribers = async (req, res) => {
+  try {
+    const subscribers = await Subscriber.find();
+    res.status(200).json(subscribers);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+const showSubscriberNumber = async (req, res) => {
+  try {
+    const count = await Subscriber.countDocuments();
+    res.status(200).json({ count });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
+
+module.exports = { createBlog, getBlogs, likeBlog, unlikeBlog, updateBlog, deleteBlog, getBlogById, createCategory, deleteCategory,
+  getCategoryById, getAllCategories, showAllSubscribers, showSubscriberNumber };
