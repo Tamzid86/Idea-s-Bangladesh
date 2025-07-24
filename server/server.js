@@ -88,3 +88,9 @@ app.get("/api/check-subscriber", async (req, res) => {
 
 const adRoutes = require('./routes/adRoute');
 app.use('/api', adRoutes);
+
+const commentRoutes = require('./routes/comments');
+app.use('/api/comments', commentRoutes);
+
+const likeRoutes = require('./routes/likes');
+app.use('/api', likeRoutes);

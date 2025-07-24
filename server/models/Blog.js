@@ -42,6 +42,15 @@ const blogSchema = mongoose.Schema(
        type: String,
        default: null        
    },
+   likes: {
+  type: Number,
+  default: 0
+},
+likedBy: {
+  type: [String],
+  default: []
+},
+
    category: {
        type: String,
        default: null
