@@ -262,11 +262,14 @@ useEffect(() => {
             >
              Manage Categories
             </button>
+            <Link href="/admin/dashboard/newsletter">
             <button
               className="bg-blue-200 text-blue-800 px-4 py-2 rounded font-semibold shadow hover:bg-blue-300 transition"
             >
               Newsletter
+              
             </button>
+            </Link>
             <Link href="/admin/dashboard/ads">
               <button className="bg-green-200 text-green-800 px-4 py-2 rounded font-semibold shadow hover:bg-green-300 transition">
                 Handle Ads

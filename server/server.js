@@ -94,3 +94,6 @@ app.use('/api/comments', commentRoutes);
 
 const likeRoutes = require('./routes/likes');
 app.use('/api', likeRoutes);
+
+const newsletterRoutes = require('./routes/newsletter');
+app.use('/api', newsletterRoutes);

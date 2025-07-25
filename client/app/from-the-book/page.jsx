@@ -107,373 +107,243 @@ export default function FromBookPage() {
     setTimeout(() => (document.body.style.overflow = "auto"), 200);
   };
 
-  // Blog Card (original design)
 
-  function BlogCard({ blog, handleShowSummary }) {
-    const router = useRouter();
-    const [showModal, setShowModal] = useState(false);
-    const [hovered, setHovered] = useState(false);
-    const [shareCopied, setShareCopied] = useState(false);
-    const [commentModal, setCommentModal] = useState(false);
-    const [comments, setComments] = useState([]);
-    const [newComment, setNewComment] = useState("");
-    const [likes, setLikes] = useState(blog.likes || 0);
-    const [liked, setLiked] = useState(false);
-  
-    const subscriberEmail =
-      typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
-    const subscriberName =
-      typeof window !== "undefined" && localStorage.getItem("subscriberName");
-  
-    const handleRead = () => {
-      if (subscriberEmail && subscriberName) {
-        router.push(`/from-the-book/${blog._id}`);
-      } else {
-        setShowModal(true);
-      }
-    };
-    useEffect(() => {
-      const email = localStorage.getItem("subscriberEmail");
-      if (email && blog.likedBy?.includes(email)) {
-        setLiked(true);
-      }
-    }, [blog.likedBy]);
+function BlogCard({ blog, handleShowSummary }) {
+  const router = useRouter();
+  const [showModal, setShowModal] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [shareCopied, setShareCopied] = useState(false);
+  const [commentModal, setCommentModal] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [likes, setLikes] = useState(blog.likes || 0);
+  const [liked, setLiked] = useState(false);
 
-    const handleLike = async () => {
-      const email = localStorage.getItem("subscriberEmail");
-      if (!email) return alert("You must subscribe to like a blog");
+  const subscriberEmail =
+    typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
+  const subscriberName =
+    typeof window !== "undefined" && localStorage.getItem("subscriberName");
 
+  const handleRead = () => {
+    if (subscriberEmail && subscriberName) {
+      router.push(`/from-the-book/${blog._id}`);
+    } else {
+      setShowModal(true);
+    }
+  };
+
+  useEffect(() => {
+    if (subscriberEmail && blog.likedBy?.includes(subscriberEmail)) {
+      setLiked(true);
+    }
+  }, [blog.likedBy, subscriberEmail]);
+
+  const handleLike = async () => {
+    if (!subscriberEmail) {
+      alert("You must subscribe to like a blog");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`http://localhost:5000/api/blogs/${blog._id}/like`, {
+        email: subscriberEmail,
+      });
+
+      setLikes(res.data.likes);       
+      setLiked(res.data.liked);       
+    } catch (err) {
+      console.error("Like error:", err);
+    }
+  };
+
+  const handleShare = async () => {
+    const shareUrl = `${window.location.origin}/from-the-book/${blog._id}`;
+    const shareData = {
+      title: blog.title,
+      text: blog.summary,
+      url: shareUrl,
+    };
+
+    if (navigator.share) {
       try {
-        const res = await axios.post(`http://localhost:5000/api/blogs/${blog._id}/like`, {
-          email
-        });
-        setLikes(res.data.likes);
-        setLiked(res.data.liked);
-      } catch (err) {
-        console.error("Like error:", err);
-      }
-    };
-      
-    const handleShare = async () => {
-      const shareUrl = `${window.location.origin}/from-the-book/${blog._id}`;
-      const shareData = {
-        title: blog.title,
-        text: blog.summary,
-        url: shareUrl,
-      };
-  
-      if (navigator.share) {
-        try {
-          await navigator.share(shareData);
-          return;
-        } catch (err) {}
-      }
-  
-      try {
-        await navigator.clipboard.writeText(shareUrl);
-        setShareCopied(true);
-        setTimeout(() => setShareCopied(false), 1500);
-      } catch (err) {
-        alert("Link: " + shareUrl);
-      }
-    };
-  
-    const fetchComments = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/api/comments/${blog._id}`);
-        setComments(res.data);
-      } catch (err) {
-        console.error("Error fetching comments:", err);
-      }
-    };
-  
-    const handleCommentSubmit = async () => {
-      if (!newComment.trim()) return;
-      try {
-        const res = await axios.post("http://localhost:5000/api/comments", {
-          blogId: blog._id,
-          name: subscriberName,
-          email: subscriberEmail,
-          content: newComment,
-        });
-        setComments([res.data, ...comments]);
-        setNewComment("");
-      } catch (err) {
-        console.error("Error posting comment:", err);
-      }
-    };
-  
-    const openCommentModal = () => {
-      setCommentModal(true);
-      fetchComments();
-    };
-  
-    return (
-      <>
-        <motion.div
-          variants={{
-            hidden: { opacity: 0, y: 24 },
-            show: {
-              opacity: 1,
-              y: 0,
-              transition: { type: "spring", stiffness: 120, damping: 18 },
-            },
+        await navigator.share(shareData);
+        return;
+      } catch (err) {}
+    }
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 1500);
+    } catch (err) {
+      alert("Link: " + shareUrl);
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/comments/${blog._id}`);
+      setComments(res.data);
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+    }
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim()) return;
+    try {
+      const res = await axios.post("http://localhost:5000/api/comments", {
+        blogId: blog._id,
+        name: subscriberName,
+        email: subscriberEmail,
+        content: newComment,
+      });
+      setComments([res.data, ...comments]);
+      setNewComment("");
+    } catch (err) {
+      console.error("Error posting comment:", err);
+    }
+  };
+
+  const openCommentModal = () => {
+    setCommentModal(true);
+    fetchComments();
+  };
+
+  return (
+    <>
+      {/* Card layout */}
+      <motion.div
+        whileHover={{
+          y: -3,
+          boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
+        }}
+        className="flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48"
+        style={{ minHeight: "12rem", height: "12rem" }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+      >
+        {/* Image or title initials */}
+        <div
+          className="md:w-48 lg:w-56 h-48 flex-shrink-0 flex items-center justify-center p-0 m-0"
+          style={{
+            width: "12rem",
+            height: "12rem",
           }}
-          whileHover={{
-            y: -3,
-            boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
-          }}
-          className="flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48"
-          style={{ minHeight: "12rem", height: "12rem" }}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
         >
-          <div
-            className="md:w-48 lg:w-56 h-48 flex-shrink-0 flex items-center justify-center p-0 m-0"
-            style={{
-              width: "12rem",
-              height: "12rem",
-              minWidth: "12rem",
-              maxWidth: "12rem",
-              minHeight: "12rem",
-              maxHeight: "12rem",
-              padding: 0,
-              margin: 0,
-            }}
-          >
-            {blog.imageUrl ? (
-              <img
-                src={blog.imageUrl}
-                alt={blog.title}
-                className="w-full h-full object-cover object-center rounded-none"
-                style={{
-                  width: "12rem",
-                  height: "12rem",
-                  minWidth: "12rem",
-                  maxWidth: "12rem",
-                  minHeight: "12rem",
-                  maxHeight: "12rem",
-                }}
-              />
-            ) : (
-              <div
-                className="flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200"
-                style={{
-                  width: "12rem",
-                  height: "12rem",
-                  fontWeight: 700,
-                  fontSize: "3rem",
-                  color: "#2b5040",
-                  letterSpacing: "1px",
-                  textTransform: "uppercase",
-                  borderRadius: "0.75rem",
-                  padding: 0,
-                  margin: 0,
-                }}
-                aria-label="Placeholder image"
-              >
-                {blog.title?.[0] || "B"}
-              </div>
-            )}
-          </div>
-  
-          <div className="p-4 md:p-6 flex flex-col flex-1 min-w-0">
-            <div>
-              <div className="flex items-center gap-3 mb-1 flex-wrap">
-                <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
-                  {blog.author || "Admin"}
-                </span>
-                {blog.category && (
-                  <span className="bg-green-50 text-green-800 text-xs px-3 py-1 rounded-full font-semibold border border-green-100">
-                    {blog.category}
-                  </span>
-                )}
-                {blog.read_time && (
-                  <span className="text-gray-400 text-xs flex items-center gap-1">
-                    <svg width="15" height="15" fill="none" className="inline">
-                      <circle cx="7.5" cy="7.5" r="7.5" fill="#E5E7EB" />
-                      <path
-                        d="M7.5 3.5v4l2.5 1.5"
-                        stroke="#6B7280"
-                        strokeWidth="1.2"
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    {blog.read_time}
-                  </span>
-                )}
-              </div>
-              <h3
-                className="font-bold text-lg md:text-xl mb-1 transition-colors duration-200 line-clamp-1"
-                style={{ color: hovered ? "#9bcbb2" : "#191919" }}
-              >
-                {blog.title}
-              </h3>
-              <p className="text-gray-700 text-sm mb-4 line-clamp-2">
-                {blog.summary}
-              </p>
+          {blog.imageUrl ? (
+            <img
+              src={blog.imageUrl}
+              alt={blog.title}
+              className="w-full h-full object-cover object-center"
+              style={{
+                width: "12rem",
+                height: "12rem",
+              }}
+            />
+          ) : (
+            <div
+              className="flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200"
+              style={{
+                width: "12rem",
+                height: "12rem",
+                fontWeight: 700,
+                fontSize: "3rem",
+                color: "#2b5040",
+                textTransform: "uppercase",
+              }}
+            >
+              {blog.title?.[0] || "B"}
             </div>
-            <div className="flex gap-2 mt-auto flex-wrap">
-              <button
-                className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
-                onClick={() => handleShowSummary(blog.summary)}
-              >
-                Read Summary
-              </button>
-              <button
-                className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm"
-                onClick={handleRead}
-              >
-                Read Full Article
-                <ArrowUpRight size={16} />
-              </button>
-              <button
-                className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-green-50 transition text-sm"
-                onClick={openCommentModal}
-              >
-                Comments
-              </button>
-                <button
-                  onClick={handleLike}
-                  className={`flex items-center gap-1 px-4 py-2 rounded border text-sm font-medium transition ${
-                    liked
-                      ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
-                      : "bg-white text-gray-700 border-gray-200 hover:bg-green-50"
-                  }`}
-                >
-                  {liked ? "💚 Liked" : "🤍 Like"} ({likes})
-                </button>
-              <div className="relative">
-                <button
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
-                  onClick={handleShare}
-                  aria-label="Share"
-                >
-                  <Share2 size={18} />
-                  Share
-                </button>
-                {shareCopied && (
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
-                    Link Copied!
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        </motion.div>
-  
-        <AnimatePresence>
-          {showModal && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
-                onClick={() => setShowModal(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.96 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.94 }}
-                transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-8 w-full max-w-md"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-bold text-green-700">
-                    Subscribe Required
-                  </h2>
-                  <button onClick={() => setShowModal(false)}>
-                    <X size={26} className="text-gray-400 hover:text-green-700" />
-                  </button>
-                </div>
-                <p className="text-gray-700 mb-6">
-                  You need to subscribe to read the full article. Please subscribe
-                  to get access to exclusive content!
-                </p>
-                <div
-                  className="w-full py-2 rounded font-bold transition"
-                  onClick={() => setShowModal(false)}
-                >
-                  <SubscribeButton />
-                </div>
-              </motion.div>
-            </>
           )}
-        </AnimatePresence>
-  
-        <AnimatePresence>
-          {commentModal && (
-            <>
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
-                onClick={() => setCommentModal(false)}
-              />
-              <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ type: "spring", stiffness: 300, damping: 25 }}
-                className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-xl p-6 w-full max-w-2xl max-h-[80vh] overflow-y-auto"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-bold text-green-700">Comments</h2>
-                  <button onClick={() => setCommentModal(false)}>
-                    <X size={22} className="text-gray-400 hover:text-green-700" />
-                  </button>
-                </div>
-  
-                {subscriberName && subscriberEmail ? (
-                  <>
-                    <textarea
-                      className="w-full border p-2 rounded mb-3"
-                      rows={3}
-                      placeholder="Write your comment..."
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                    />
-                    <button
-                      onClick={handleCommentSubmit}
-                      className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700 mb-4"
-                    >
-                      Post
-                    </button>
-                  </>
-                ) : (
-                  <p className="text-red-500 mb-4">
-                    You must be subscribed to post a comment.
-                  </p>
-                )}
-  
-                <div className="space-y-3">
-                  {comments.map((comment) => (
-                    <div
-                      key={comment._id}
-                      className="bg-gray-100 rounded p-3 border"
-                    >
-                      <p className="font-semibold">{comment.name}</p>
-                      <p className="text-sm text-gray-500">
-                        {new Date(comment.createdAt).toLocaleString()}
-                      </p>
-                      <p>{comment.content}</p>
-                    </div>
-                  ))}
-                  {comments.length === 0 && (
-                    <p className="text-sm text-gray-500">No comments yet.</p>
-                  )}
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
-       
+        </div>
 
-      </>
-    );
-  }
+        {/* Blog content and buttons */}
+        <div className="p-4 md:p-6 flex flex-col flex-1 min-w-0">
+          <div>
+            <div className="flex items-center gap-3 mb-1 flex-wrap">
+              <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
+                {blog.author || "Admin"}
+              </span>
+              {blog.category && (
+                <span className="bg-green-50 text-green-800 text-xs px-3 py-1 rounded-full font-semibold border border-green-100">
+                  {blog.category}
+                </span>
+              )}
+              {blog.read_time && (
+                <span className="text-gray-400 text-xs flex items-center gap-1">
+                  ⏱ {blog.read_time}
+                </span>
+              )}
+            </div>
+            <h3
+              className="font-bold text-lg md:text-xl mb-1 transition-colors duration-200 line-clamp-1"
+              style={{ color: hovered ? "#9bcbb2" : "#191919" }}
+            >
+              {blog.title}
+            </h3>
+            <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+              {blog.summary}
+            </p>
+          </div>
+
+          {/* Action buttons */}
+          <div className="flex gap-2 mt-auto flex-wrap">
+            <button
+              className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
+              onClick={() => handleShowSummary(blog.summary)}
+            >
+              Read Summary
+            </button>
+            <button
+              className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm"
+              onClick={handleRead}
+            >
+              Read Full Article <ArrowUpRight size={16} />
+            </button>
+            <button
+              className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-green-50 transition text-sm"
+              onClick={openCommentModal}
+            >
+              Comments
+            </button>
+
+            {/* ✅ Like button */}
+            <button
+              onClick={handleLike}
+              className={`flex items-center gap-1 px-4 py-2 rounded border text-sm font-medium transition ${
+                liked
+                  ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
+                  : "bg-white text-gray-700 border-gray-200 hover:bg-green-50"
+              }`}
+            >
+              {liked ? "💚 Liked" : "🤍 Like"} ({likes})
+            </button>
+
+            {/* Share */}
+            <div className="relative">
+              <button
+                className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
+                onClick={handleShare}
+              >
+                <Share2 size={18} />
+                Share
+              </button>
+              {shareCopied && (
+                <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
+                  Link Copied!
+                </span>
+              )}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+
+    </>
+  );
+}
+
   return (
     <div className="min-h-screen bg-[#f9fdfa] font-[Nunito]">
       {/* HEADER */}

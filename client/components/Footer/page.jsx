@@ -13,7 +13,7 @@ export default function Footer() {
             <ul className="space-y-1 text-gray-300">
               <li><a href="/" className="hover:text-green-400">Home</a></li>
               <li><a href="/about" className="hover:text-green-400">About</a></li>
-              <li><a href="/contact" className="hover:text-green-400">Contact</a></li>
+              {/* <li><a href="/contact" className="hover:text-green-400">Contact</a></li> */}
             </ul>
           </div>
           <div>
@@ -27,9 +27,9 @@ export default function Footer() {
           <div>
             <div className="font-semibold mb-2">Support</div>
             <ul className="space-y-1 text-gray-300">
-              <li><a href="#" className="hover:text-green-400">Help Center</a></li>
-              <li><a href="#" className="hover:text-green-400">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-green-400">Terms of Service</a></li>
+              {/* <li><a href="#" className="hover:text-green-400">Help Center</a></li> */}
+              <li><a href="/privacy-policy" className="hover:text-green-400">Privacy Policy</a></li>
+              <li><a href="/termsofservice" className="hover:text-green-400">Terms of Service</a></li>
             </ul>
           </div>
         </div>

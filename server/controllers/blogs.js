@@ -60,30 +60,30 @@ const getBlogs = async (req, res) => {
 };
 
 // Like a blog
-const likeBlog = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const blog = await Blog.findByIdAndUpdate(id, { $inc: { likes: 1 } }, { new: true });
-    if (!blog) return res.status(404).json({ message: "Blog not found" });
-    res.json({ likes: blog.likes });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to like blog", error: error.message });
-  }
-};
+// const likeBlog = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const blog = await Blog.findByIdAndUpdate(id, { $inc: { likes: 1 } }, { new: true });
+//     if (!blog) return res.status(404).json({ message: "Blog not found" });
+//     res.json({ likes: blog.likes });
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to like blog", error: error.message });
+//   }
+// };
 
-// Unlike a blog
-const unlikeBlog = async (req, res) => {
-  try {
-    const { id } = req.params;
-    const blog = await Blog.findById(id);
-    if (!blog) return res.status(404).json({ message: "Blog not found" });
-    if (blog.likes > 0) blog.likes -= 1;
-    await blog.save();
-    res.json({ likes: blog.likes });
-  } catch (error) {
-    res.status(500).json({ message: "Failed to unlike blog", error: error.message });
-  }
-};
+// // Unlike a blog
+// const unlikeBlog = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+//     const blog = await Blog.findById(id);
+//     if (!blog) return res.status(404).json({ message: "Blog not found" });
+//     if (blog.likes > 0) blog.likes -= 1;
+//     await blog.save();
+//     res.json({ likes: blog.likes });
+//   } catch (error) {
+//     res.status(500).json({ message: "Failed to unlike blog", error: error.message });
+//   }
+// };
 
 // Update a blog
 const updateBlog = async (req, res) => {
@@ -215,5 +215,5 @@ const showSubscriberNumber = async (req, res) => {
 
 
 
-module.exports = { createBlog, getBlogs, likeBlog, unlikeBlog, updateBlog, deleteBlog, getBlogById, createCategory, deleteCategory,
+module.exports = { createBlog, getBlogs, updateBlog, deleteBlog, getBlogById, createCategory, deleteCategory,
   getCategoryById, getAllCategories, showAllSubscribers, showSubscriberNumber };

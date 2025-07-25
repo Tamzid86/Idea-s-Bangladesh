@@ -143,7 +143,7 @@ export default function HandleRequestsPage() {
                       <span className="text-gray-400">N/A</span>
                     )}
                   </td>
-                  <td className="py-3 px-4 align-middle">{idea.authorName || "N/A"}</td>
+                  <td className="py-3 px-4 align-middle">{idea.author || "N/A"}</td>
                   <td className="py-3 px-4 align-middle" onClick={e => e.stopPropagation()}>
                     <div className="flex gap-2 justify-center items-center">
                       <button
