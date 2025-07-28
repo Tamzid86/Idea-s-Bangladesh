@@ -5,6 +5,7 @@ import Link from "next/link";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import { Edit, Trash2, Search, X, ThumbsUp, Plus } from "lucide-react";
+import { Editor } from '@tinymce/tinymce-react';
 
 export default function AdminDashboard() {
   const [blogs, setBlogs] = useState([]);
@@ -250,12 +251,16 @@ useEffect(() => {
           </div>
           <div className="flex flex-col md:flex-row gap-3 mt-5 md:mt-0">
             {/* New Buttons */}
+            <Link href={"/admin/dashboard/create-blog"}>
             <button
               className="bg-green-600 text-white px-4 py-2 rounded font-semibold shadow hover:bg-green-700 transition"
-              onClick={() => setShowModal(true)}
+              
             >
               Create Blog
             </button>
+            
+            </Link>
+            
             <button
               className="bg-green-100 text-green-800 px-4 py-2 rounded font-semibold shadow hover:bg-green-200 transition flex items-center gap-2"
               onClick={() => setCatModal(true)}
@@ -340,7 +345,7 @@ useEffect(() => {
                     className="w-full mt-1 border rounded px-3 py-2 outline-none focus:ring focus:ring-green-100"
                   />
                 </div>
-                <div className="mb-3">
+                {/* <div className="mb-3">
                   <label className="font-semibold">Description</label>
                   <textarea
                     name="description"
@@ -351,7 +356,24 @@ useEffect(() => {
                     className="w-full mt-1 border rounded px-3 py-2 outline-none focus:ring focus:ring-green-100 resize-vertical"
                     style={{ minHeight: 120 }}
                   />
-                </div>
+                </div> */}
+                <div className="mb-3">
+                    <label className="font-semibold">Description</label>
+                    <Editor
+                      apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
+                      value={form.description}
+                      init={{
+                          plugins: 'image table lists link code',
+                          toolbar:
+                            'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code',
+                          automatic_uploads: true,
+                          images_upload_url: 'http://localhost:5000/api/upload-inline-image',
+                          paste_data_images: true,
+                        }}
+                      onEditorChange={(content) => setForm({ ...form, description: content })}
+                    />
+
+                  </div>
                 <div className="mb-3">
                   <label className="font-semibold">Image</label>
                   <input

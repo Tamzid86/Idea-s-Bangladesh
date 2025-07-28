@@ -278,7 +278,7 @@ export default function BlogDetailsPage({ params }) {
           <h2 className="font-bold text-xl mb-2">Full Article</h2>
           {isSubscriber ? (
             <div className="text-gray-700 leading-relaxed text-base whitespace-pre-line">
-              {blog.description}
+              <div dangerouslySetInnerHTML={{ __html: blog.description }} />
             </div>
           ) : (
             <div className="text-red-600 font-semibold bg-red-50 rounded-lg px-6 py-6 shadow text-base mb-8">

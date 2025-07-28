@@ -52,3 +52,27 @@ body {
 .btn-shimmer:hover::before {
   left: 120%;
 }
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.prose table,
+.prose th,
+.prose td {
+  border: 1px solid #ccc;
+}
+
+.prose th,
+.prose td {
+  padding: 8px;
+  text-align: left;
+}
+
+.prose img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+}

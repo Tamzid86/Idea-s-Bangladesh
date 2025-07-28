@@ -212,56 +212,35 @@ function BlogCard({ blog, handleShowSummary }) {
 
   return (
     <>
-      {/* Card layout */}
+      {/* Blog Card */}
       <motion.div
         whileHover={{
           y: -3,
           boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
         }}
-        className="flex flex-col md:flex-row items-stretch w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200 min-h-[200px] h-48"
-        style={{ minHeight: "12rem", height: "12rem" }}
+        className="flex flex-col sm:flex-row w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         {/* Image or title initials */}
-        <div
-          className="md:w-48 lg:w-56 h-48 flex-shrink-0 flex items-center justify-center p-0 m-0"
-          style={{
-            width: "12rem",
-            height: "12rem",
-          }}
-        >
+        <div className="w-full sm:w-48 lg:w-56 h-48 sm:h-auto flex items-center justify-center flex-shrink-0">
           {blog.imageUrl ? (
             <img
               src={blog.imageUrl}
               alt={blog.title}
               className="w-full h-full object-cover object-center"
-              style={{
-                width: "12rem",
-                height: "12rem",
-              }}
             />
           ) : (
-            <div
-              className="flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200"
-              style={{
-                width: "12rem",
-                height: "12rem",
-                fontWeight: 700,
-                fontSize: "3rem",
-                color: "#2b5040",
-                textTransform: "uppercase",
-              }}
-            >
+            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200 font-bold text-4xl uppercase text-green-900">
               {blog.title?.[0] || "B"}
             </div>
           )}
         </div>
-
-        {/* Blog content and buttons */}
+  
+        {/* Content */}
         <div className="p-4 md:p-6 flex flex-col flex-1 min-w-0">
           <div>
-            <div className="flex items-center gap-3 mb-1 flex-wrap">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
               <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
                 {blog.author || "Admin"}
               </span>
@@ -277,29 +256,29 @@ function BlogCard({ blog, handleShowSummary }) {
               )}
             </div>
             <h3
-              className="font-bold text-lg md:text-xl mb-1 transition-colors duration-200 line-clamp-1"
+              className="font-bold text-base sm:text-lg md:text-xl mb-1 transition-colors duration-200 line-clamp-1"
               style={{ color: hovered ? "#9bcbb2" : "#191919" }}
             >
               {blog.title}
             </h3>
-            <p className="text-gray-700 text-sm mb-4 line-clamp-2">
+            <p className="text-gray-700 text-sm mb-3 line-clamp-2">
               {blog.summary}
             </p>
           </div>
-
-          {/* Action buttons */}
-          <div className="flex gap-2 mt-auto flex-wrap">
+  
+          {/* Action Buttons */}
+          <div className="flex flex-wrap items-center gap-2 mt-auto">
             <button
               className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
               onClick={() => handleShowSummary(blog.summary)}
             >
-              Read Summary
+              Summary
             </button>
             <button
               className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm"
               onClick={handleRead}
             >
-              Read Full Article <ArrowUpRight size={16} />
+              Full Article <ArrowUpRight size={16} />
             </button>
             <button
               className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-green-50 transition text-sm"
@@ -307,20 +286,16 @@ function BlogCard({ blog, handleShowSummary }) {
             >
               Comments
             </button>
-
-            {/* ✅ Like button */}
             <button
               onClick={handleLike}
-              className={`flex items-center gap-1 px-4 py-2 rounded border text-sm font-medium transition ${
-                liked
-                  ? "bg-green-600 text-white border-green-600 hover:bg-green-700"
-                  : "bg-white text-gray-700 border-gray-200 hover:bg-green-50"
-              }`}
+              className="flex items-center gap-1 px-2 py-1 rounded hover:bg-green-50 transition"
+              title="Like this blog"
             >
-              {liked ? "💚 Liked" : "🤍 Like"} ({likes})
+              <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
+                👍
+              </span>
+              <span className="text-sm font-medium text-gray-700">{likes}</span>
             </button>
-
-            {/* Share */}
             <div className="relative">
               <button
                 className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
@@ -338,10 +313,57 @@ function BlogCard({ blog, handleShowSummary }) {
           </div>
         </div>
       </motion.div>
-
-
+  
+      {/* Comment Modal */}
+      {commentModal && (
+        <div className="fixed inset-0 z-50 backdrop-blur-sm bg-white/30 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg w-[90%] max-w-md shadow-xl relative">
+            <button
+              onClick={() => setCommentModal(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-red-600"
+            >
+              <X size={20} />
+            </button>
+            <h2 className="text-xl font-bold mb-4">Comments</h2>
+            <div className="space-y-3 max-h-64 overflow-y-auto mb-4">
+              {comments.length ? (
+                comments.map((c, idx) => (
+                  <div key={idx} className="border-b pb-2">
+                    <p className="font-semibold">{c.name}</p>
+                    <p className="text-sm text-gray-700">{c.content}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm">No comments yet.</p>
+              )}
+            </div>
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              placeholder="Write a comment..."
+              className="w-full p-2 border rounded"
+              rows={3}
+            />
+            <div className="flex justify-end mt-2 gap-2">
+              <button
+                onClick={() => setCommentModal(false)}
+                className="text-gray-500 px-3 py-1"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCommentSubmit}
+                className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+              >
+                Post
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
+  
 }
 
   return (

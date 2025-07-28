@@ -58,7 +58,11 @@ export default function BlogDetail() {
             </div>
             <div className="bg-white rounded-xl p-6 shadow">
               <div className="font-bold text-xl mb-2">Full Article</div>
-              <div className="text-gray-800 whitespace-pre-line">{blog.content}</div>
+              <div
+                className="prose max-w-none text-gray-800"
+                dangerouslySetInnerHTML={{ __html: blog.content }}
+              ></div>
+
             </div>
           </>
         ) : (

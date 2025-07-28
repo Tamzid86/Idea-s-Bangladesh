@@ -5,6 +5,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const Passport = require("passport");
 dotenv.config();
+const path = require('path');
 
 
 require("./controllers/auth");
@@ -22,6 +23,9 @@ app.use(Passport.initialize());
 app.use(Passport.session());
 
 app.use(cors());
+
+app.use(cors({ origin: '*', credentials: true }));
+
 app.use(express.json());
 
 // Example route
@@ -97,3 +101,5 @@ app.use('/api', likeRoutes);
 
 const newsletterRoutes = require('./routes/newsletter');
 app.use('/api', newsletterRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
