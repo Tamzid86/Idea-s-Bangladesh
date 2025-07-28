@@ -15,6 +15,12 @@ export default function NewsletterComposePage() {
     e.preventDefault();
     setSending(true);
     setResult(null);
+     useEffect(() => {
+        const token = localStorage.getItem("adminToken");
+        if (!token) {
+          router.push("/admin");
+        }
+      }, []);
 
     try {
       const res = await axios.post("http://localhost:5000/api/send-newsletter", {

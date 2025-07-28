@@ -21,6 +21,13 @@ export default function CreateBlogPage() {
         category: "",
         type: "English",
     });
+     useEffect(() => {
+            const token = localStorage.getItem("adminToken");
+            if (!token) {
+            router.push("/admin");
+            }
+        }, []);
+    
 
     useEffect(() => {
         axios
@@ -64,6 +71,7 @@ export default function CreateBlogPage() {
             setCreating(false);
         }
     };
+    
 
     return (
         <div className="min-h-screen bg-[#F5FAF7] pb-20 font-[Nunito] px-8">
