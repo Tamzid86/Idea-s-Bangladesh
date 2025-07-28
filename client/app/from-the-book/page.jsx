@@ -2,33 +2,37 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { ArrowUpRight, Image as ImageIcon, ThumbsUp, Share2, X } from "lucide-react";
+import { ArrowUpRight, Image as ImageIcon, ThumbsUp, Share2, X, MoreVertical } from "lucide-react";
 import axios from "axios";
-//import Footer from "../../components/Footer/page";
+import Footer from "../../components/Footer/page";
 // import BlogCard from "../../components/BlogCard/page";
 import SubscribeButton from "../../components/SubscribeButton/page";
 
 // Pagination component
 function Pagination({ page, totalPages, onPageChange }) {
   return (
-    <div className="flex gap-3 justify-center mt-8">
-      <button
-        disabled={page === 1}
-        onClick={() => onPageChange(page - 1)}
-        className="px-3 py-1 rounded bg-green-100 text-green-800 font-semibold disabled:opacity-50"
-      >
-        Prev
-      </button>
-      <span className="px-2 text-gray-700">
-        Page {page} of {totalPages}
-      </span>
-      <button
-        disabled={page === totalPages}
-        onClick={() => onPageChange(page + 1)}
-        className="px-3 py-1 rounded bg-green-100 text-green-800 font-semibold disabled:opacity-50"
-      >
-        Next
-      </button>
+    <div className="w-full flex items-center justify-center px-4">
+      <div className="flex items-center gap-4 bg-white rounded-xl shadow-md border-2 border-green-200 p-4">
+        <button
+          disabled={page === 1}
+          onClick={() => onPageChange(page - 1)}
+          className="flex items-center justify-center px-6 py-3 rounded-lg bg-green-500 text-white font-bold disabled:bg-gray-400 disabled:cursor-not-allowed text-base hover:bg-green-600 transition-colors min-w-[100px] shadow-sm"
+        >
+          ← Prev
+        </button>
+        <div className="flex items-center px-6 py-3 bg-green-100 border-2 border-green-300 rounded-lg min-w-[120px] justify-center shadow-sm">
+          <span className="text-green-900 font-bold text-base">
+            {page} / {totalPages}
+          </span>
+        </div>
+        <button
+          disabled={page === totalPages}
+          onClick={() => onPageChange(page + 1)}
+          className="flex items-center justify-center px-6 py-3 rounded-lg bg-green-500 text-white font-bold disabled:bg-gray-400 disabled:cursor-not-allowed text-base hover:bg-green-600 transition-colors min-w-[100px] shadow-sm"
+        >
+          Next →
+        </button>
+      </div>
     </div>
   );
 }
@@ -118,6 +122,7 @@ export default function FromBookPage() {
     const [newComment, setNewComment] = useState("");
     const [likes, setLikes] = useState(blog.likes || 0);
     const [liked, setLiked] = useState(false);
+    const [showDropdown, setShowDropdown] = useState(false);
 
     const subscriberEmail =
       typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
@@ -210,6 +215,20 @@ export default function FromBookPage() {
       fetchComments();
     };
 
+    // Close dropdown when clicking outside
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (showDropdown && !event.target.closest('.dropdown-container')) {
+          setShowDropdown(false);
+        }
+      };
+
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }, [showDropdown]);
+
     return (
       <>
         {/* Blog Card */}
@@ -223,7 +242,7 @@ export default function FromBookPage() {
           onMouseLeave={() => setHovered(false)}
         >
           {/* Image or title initials */}
-          <div className="w-full sm:w-48 lg:w-56 h-48 sm:h-auto flex items-center justify-center flex-shrink-0">
+          <div className="w-full sm:w-40 md:w-48 lg:w-56 h-40 sm:h-auto flex items-center justify-center flex-shrink-0">
             {blog.imageUrl ? (
               <img
                 src={blog.imageUrl}
@@ -231,21 +250,21 @@ export default function FromBookPage() {
                 className="w-full h-full object-cover object-center"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200 font-bold text-4xl uppercase text-green-900">
+              <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-green-50 to-green-200 font-bold text-3xl md:text-4xl uppercase text-green-900">
                 {blog.title?.[0] || "B"}
               </div>
             )}
           </div>
 
           {/* Content */}
-          <div className="p-4 md:p-6 flex flex-col flex-1 min-w-0">
+          <div className="p-3 sm:p-4 md:p-6 flex flex-col flex-1 min-w-0">
             <div>
               <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <span className="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-medium">
+                <span className="bg-green-100 text-green-700 text-xs px-2 md:px-3 py-1 rounded-full font-medium">
                   {blog.author || "Admin"}
                 </span>
                 {blog.category && (
-                  <span className="bg-green-50 text-green-800 text-xs px-3 py-1 rounded-full font-semibold border border-green-100">
+                  <span className="bg-green-50 text-green-800 text-xs px-2 md:px-3 py-1 rounded-full font-semibold border border-green-100">
                     {blog.category}
                   </span>
                 )}
@@ -256,59 +275,129 @@ export default function FromBookPage() {
                 )}
               </div>
               <h3
-                className="font-bold text-base sm:text-lg md:text-xl mb-1 transition-colors duration-200 line-clamp-1"
+                className="font-bold text-sm sm:text-base md:text-lg lg:text-xl mb-1 transition-colors duration-200 line-clamp-2 sm:line-clamp-1"
                 style={{ color: hovered ? "#9bcbb2" : "#191919" }}
               >
                 {blog.title}
               </h3>
-              <p className="text-gray-700 text-sm mb-3 line-clamp-2">
+              <p className="text-gray-700 text-xs sm:text-sm mb-3 line-clamp-2">
                 {blog.summary}
               </p>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex flex-wrap items-center gap-2 mt-auto">
-              <button
-                className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
-                onClick={() => handleShowSummary(blog.summary)}
-              >
-                Summary
-              </button>
-              <button
-                className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm"
-                onClick={handleRead}
-              >
-                Full Article <ArrowUpRight size={16} />
-              </button>
-              <button
-                className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-green-50 transition text-sm"
-                onClick={openCommentModal}
-              >
-                Comments
-              </button>
-              <button
-                onClick={handleLike}
-                className="flex items-center gap-1 px-2 py-1 rounded hover:bg-green-50 transition"
-                title="Like this blog"
-              >
-                <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
-                  👍
-                </span>
-                <span className="text-sm font-medium text-gray-700">{likes}</span>
-              </button>
-              <div className="relative">
+            <div className="flex items-center justify-between mt-auto">
+              {/* Desktop View - All buttons visible */}
+              <div className="hidden sm:flex flex-wrap items-center gap-2">
                 <button
-                  className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
-                  onClick={handleShare}
+                  className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
+                  onClick={() => handleShowSummary(blog.summary)}
                 >
-                  <Share2 size={18} />
-                  Share
+                  Summary
                 </button>
-                {shareCopied && (
-                  <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
-                    Link Copied!
+                <button
+                  className="bg-green-200 text-green-900 px-5 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm"
+                  onClick={handleRead}
+                >
+                  Full Article <ArrowUpRight size={16} />
+                </button>
+                <button
+                  className="bg-white border border-gray-200 text-gray-700 px-4 py-2 rounded hover:bg-green-50 transition text-sm"
+                  onClick={openCommentModal}
+                >
+                  Comments
+                </button>
+                <button
+                  onClick={handleLike}
+                  className="flex items-center gap-1 px-2 py-1 rounded hover:bg-green-50 transition"
+                  title="Like this blog"
+                >
+                  <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
+                    👍
                   </span>
-                )}
+                  <span className="text-sm font-medium text-gray-700">{likes}</span>
+                </button>
+                <div className="relative">
+                  <button
+                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
+                    onClick={handleShare}
+                  >
+                    <Share2 size={18} />
+                    Share
+                  </button>
+                  {shareCopied && (
+                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
+                      Link Copied!
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Mobile View - Primary action + dropdown */}
+              <div className="flex sm:hidden items-center gap-2 w-full">
+                <button
+                  className="bg-green-200 text-green-900 px-4 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm flex-1"
+                  onClick={handleRead}
+                >
+                  Full Article <ArrowUpRight size={16} />
+                </button>
+                <button
+                  onClick={handleLike}
+                  className="flex items-center gap-1 px-3 py-2 rounded hover:bg-green-50 transition border border-gray-200"
+                  title="Like this blog"
+                >
+                  <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
+                    👍
+                  </span>
+                  <span className="text-sm font-medium text-gray-700">{likes}</span>
+                </button>
+                <div className="relative dropdown-container">
+                  <button
+                    className="flex items-center justify-center w-10 h-10 border border-gray-200 rounded hover:bg-green-50 transition"
+                    onClick={() => setShowDropdown(!showDropdown)}
+                  >
+                    <MoreVertical size={18} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {showDropdown && (
+                    <div className="absolute right-0 top-12 bg-white rounded-lg shadow-lg border border-gray-200 py-2 min-w-[140px] z-10">
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
+                        onClick={() => {
+                          handleShowSummary(blog.summary);
+                          setShowDropdown(false);
+                        }}
+                      >
+                        Summary
+                      </button>
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition"
+                        onClick={() => {
+                          openCommentModal();
+                          setShowDropdown(false);
+                        }}
+                      >
+                        Comments
+                      </button>
+                      <button
+                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition flex items-center gap-2"
+                        onClick={() => {
+                          handleShare();
+                          setShowDropdown(false);
+                        }}
+                      >
+                        <Share2 size={16} />
+                        Share
+                      </button>
+                      {shareCopied && (
+                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow whitespace-nowrap">
+                          Link Copied!
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -316,21 +405,21 @@ export default function FromBookPage() {
 
         {/* Comment Modal */}
         {commentModal && (
-          <div className="fixed inset-0 z-50 backdrop-blur-sm bg-white/30 flex items-center justify-center">
-            <div className="bg-white p-6 rounded-lg w-[90%] max-w-md shadow-xl relative">
+          <div className="fixed inset-0 z-50 backdrop-blur-sm bg-white/30 flex items-center justify-center p-4">
+            <div className="bg-white p-4 md:p-6 rounded-lg w-full max-w-md shadow-xl relative max-h-[90vh] overflow-y-auto">
               <button
                 onClick={() => setCommentModal(false)}
-                className="absolute top-2 right-2 text-gray-500 hover:text-red-600"
+                className="absolute top-3 right-3 text-gray-500 hover:text-red-600"
               >
                 <X size={20} />
               </button>
-              <h2 className="text-xl font-bold mb-4">Comments</h2>
-              <div className="space-y-3 max-h-64 overflow-y-auto mb-4">
+              <h2 className="text-lg md:text-xl font-bold mb-4 pr-8">Comments</h2>
+              <div className="space-y-3 max-h-48 md:max-h-64 overflow-y-auto mb-4">
                 {comments.length ? (
                   comments.map((c, idx) => (
                     <div key={idx} className="border-b pb-2">
-                      <p className="font-semibold">{c.name}</p>
-                      <p className="text-sm text-gray-700">{c.content}</p>
+                      <p className="font-semibold text-sm md:text-base">{c.name}</p>
+                      <p className="text-xs md:text-sm text-gray-700">{c.content}</p>
                     </div>
                   ))
                 ) : (
@@ -341,19 +430,19 @@ export default function FromBookPage() {
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
                 placeholder="Write a comment..."
-                className="w-full p-2 border rounded"
+                className="w-full p-2 md:p-3 border rounded text-sm md:text-base"
                 rows={3}
               />
-              <div className="flex justify-end mt-2 gap-2">
+              <div className="flex justify-end mt-3 gap-2">
                 <button
                   onClick={() => setCommentModal(false)}
-                  className="text-gray-500 px-3 py-1"
+                  className="text-gray-500 px-3 py-1 text-sm md:text-base"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleCommentSubmit}
-                  className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700"
+                  className="bg-green-600 text-white px-4 py-1 rounded hover:bg-green-700 text-sm md:text-base"
                 >
                   Post
                 </button>
@@ -373,9 +462,9 @@ export default function FromBookPage() {
         initial={{ opacity: 0, y: -24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, type: "spring", stiffness: 60 }}
-        className="bg-[#EDF7F3] py-10 md:py-14"
+        className="bg-[#EDF7F3] py-8 md:py-10 lg:py-14"
       >
-        <div className="max-w-[80%] mx-auto">
+        <div className="max-w-[90%] lg:max-w-[80%] mx-auto px-4 md:px-0">
           <a
             href="/home"
             className="flex items-center gap-2 text-green-700 font-medium mb-3 hover:underline text-sm"
@@ -385,7 +474,7 @@ export default function FromBookPage() {
           <div className="flex items-center gap-3 mb-1">
             <span className="bg-green-100 rounded-full p-2 flex items-center justify-center">
               <svg
-                className="w-7 h-7 text-green-600"
+                className="w-6 h-6 md:w-7 md:h-7 text-green-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -396,19 +485,19 @@ export default function FromBookPage() {
                 />
               </svg>
             </span>
-            <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-gray-900">
               From the Book
             </h1>
           </div>
-          <p className="text-gray-600 text-lg max-w-2xl mb-6">
+          <p className="text-gray-600 text-base md:text-lg max-w-2xl mb-4 md:mb-6">
             Curated ideas and insights from published works and research, adapted for Bangladesh&apos;s unique context and challenges.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+          <div className="flex flex-col sm:flex-row gap-3 md:gap-4 items-start sm:items-center">
             <motion.input
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.35 }}
-              className="w-full max-w-lg px-5 py-3 border rounded-lg focus:outline-none focus:ring focus:ring-green-100 transition bg-white"
+              className="w-full max-w-lg px-4 md:px-5 py-2.5 md:py-3 border rounded-lg focus:outline-none focus:ring focus:ring-green-100 transition bg-white text-sm md:text-base"
               placeholder="Search ideas or categories..."
               value={search}
               onChange={(e) => {
@@ -421,9 +510,9 @@ export default function FromBookPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5 }}
               href="/Bangla-blogs"
-              className="bg-green-400 text-white px-6 py-3 rounded-lg font-normal hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap"
+              className="bg-green-400 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-normal hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base"
             >
-              বাংলা 
+              বাংলা
               <ArrowUpRight size={16} />
             </motion.a>
           </div>
@@ -435,27 +524,36 @@ export default function FromBookPage() {
         variants={containerVariant}
         initial="hidden"
         animate="show"
-        className="max-w-[95vw] md:max-w-[80%] mx-auto flex flex-col md:flex-row gap-8 px-1 md:px-0 mt-10 mb-10"
+        className="max-w-[95vw] md:max-w-[80%] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 px-2 md:px-4 lg:px-0 mt-6 lg:mt-10 mb-10"
       >
         {/* LEFT: POSTS */}
-        <div className="flex-1 space-y-8">
+        <div className="flex-1 space-y-6 lg:space-y-8">
           {loadingBlogs ? (
-            <div className="col-span-full text-center text-gray-400 py-24">
+            <div className="col-span-full text-center text-gray-400 py-16 lg:py-24">
               Loading...
             </div>
           ) : paginatedBlogs.length === 0 ? (
-            <div className="col-span-full text-center text-gray-400 py-24">
+            <div className="col-span-full text-center text-gray-400 py-16 lg:py-24">
               No blogs found.
             </div>
           ) : (
-            paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} />)
+            <>
+              {paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} />)}
+
+              {/* Pagination - Shows after posts */}
+              {totalPages > 1 && (
+                <div className="bg-gray-50 py-6 rounded-xl">
+                  <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                </div>
+              )}
+            </>
           )}
         </div>
         {/* RIGHT: ADS */}
         {ads.length > 0 && (
           <motion.div
             variants={containerVariant}
-            className="w-full md:w-[340px] flex flex-col gap-6 mt-10 md:mt-0"
+            className="w-full lg:w-[340px] flex flex-col gap-4 lg:gap-6 mt-6 lg:mt-0"
           >
             <motion.div
               variants={adVariant}
@@ -501,11 +599,6 @@ export default function FromBookPage() {
           </motion.div>
         )}
       </motion.div>
-
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-      )}
 
       {/* POPUP MODAL FOR SUMMARY */}
       <AnimatePresence>
@@ -562,7 +655,7 @@ export default function FromBookPage() {
           </>
         )}
       </AnimatePresence>
-      {/* <Footer /> */}
+      <Footer />
     </div>
   );
 }

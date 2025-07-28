@@ -31,28 +31,28 @@ export default function HomePage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-[#EDF4EE] py-30 px-4 md:px-0">
+      <section className="bg-[#EDF4EE] py-16 md:py-30 px-4 md:px-0">
         <div className="max-w-6xl mx-auto text-center">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="text-[70px] font-black text-gray-800 mb-5 w-full whitespace-nowrap overflow-x-auto text-center"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-[70px] font-black text-gray-800 mb-5 w-full text-center leading-tight"
             style={{
-              letterSpacing: "2px",
+              letterSpacing: "1px",
 
             }}
           >
             Welcome to <span className="bg-gradient-to-r from-[#7eaa92] to-[#a7f6ad] bg-clip-text text-transparent">Idea&apos;s Bangladesh</span>
           </motion.h1>
-          <p className="text-gray-700 text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-gray-700 text-base md:text-lg max-w-2xl mx-auto mb-8 px-4">
             Discover, share, and explore innovative ideas that shape our future. Join our community of thinkers and dreamers from Bangladesh and beyond.
           </p>
-          <div className="flex justify-center gap-4 mt-6">
+          <div className="flex flex-col sm:flex-row justify-center gap-4 mt-6 px-4">
             <motion.a
               whileHover={{ scale: 1.06 }}
               href="/from-the-book"
-              className="btn-shimmer bg-gradient-to-r from-[#91C5A9] to-[#74eecb] px-5 py-2 rounded-2xl text-black font-semibold shadow-lg border border-green-200 transition-all duration-300"
+              className="btn-shimmer bg-gradient-to-r from-[#91C5A9] to-[#74eecb] px-6 py-3 md:px-5 md:py-2 rounded-2xl text-black font-semibold shadow-lg border border-green-200 transition-all duration-300 w-full sm:w-auto"
               style={{ position: 'relative', overflow: 'hidden' }}
             >
               <span className="relative z-10">Start Reading</span>
@@ -60,7 +60,7 @@ export default function HomePage() {
             <motion.a
               whileHover={{ scale: 1.06 }}
               href="/idea-submission"
-              className="btn-shimmer border-2 border-green-400 px-5 py-2 rounded-2xl text-green-700 font-semibold bg-white/80 shadow-lg transition-all duration-300"
+              className="btn-shimmer border-2 border-green-400 px-6 py-3 md:px-5 md:py-2 rounded-2xl text-green-700 font-semibold bg-white/80 shadow-lg transition-all duration-300 w-full sm:w-auto"
               style={{ position: 'relative', overflow: 'hidden' }}
             >
               <span className="relative z-10">Share Ideas</span>
@@ -167,13 +167,13 @@ export default function HomePage() {
             <span
               className="rounded-full flex items-center justify-center"
               style={{
-                width: 110,
-                height: 110,
+                width: "clamp(80px, 15vw, 110px)",
+                height: "clamp(80px, 15vw, 110px)",
                 border: "3px solid",
                 borderImage: "linear-gradient(135deg, #a9ebc4, #bef5ce 90%) 1",
               }}
             >
-              <svg width="70" height="70" fill="none" viewBox="0 0 60 60">
+              <svg width="clamp(50, 12vw, 70)" height="clamp(50, 12vw, 70)" fill="none" viewBox="0 0 60 60">
                 <circle
                   cx="30"
                   cy="30"
@@ -213,12 +213,12 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25, duration: 0.8 }}
-            className="text-5xl font-extrabold mb-2 text-center"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-extrabold mb-2 text-center px-4"
             style={{
               background: "linear-gradient(90deg, #7eaa92 10%, #a7f6ad 100%)",
               WebkitBackgroundClip: "text",
               WebkitTextFillColor: "transparent",
-              letterSpacing: 2,
+              letterSpacing: "1px",
             }}
           >
             Where Ideas Take Flight
@@ -227,13 +227,13 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="text-center text-gray-600 mb-14 text-lg max-w-2xl mx-auto"
+            className="text-center text-gray-600 mb-14 text-base md:text-lg max-w-2xl mx-auto px-4"
           >
             Where inspiration is cultivated, creativity is unleashed and every spark of imagination finds its home.
           </motion.p>
         </div>
         {/* Segment Cards with animation */}
-        <div className="flex flex-col md:flex-row justify-center gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 justify-center gap-6 md:gap-8 max-w-6xl mx-auto">
           {/* 1 */}
           <motion.div
             whileHover={{ y: -6, scale: 1.035, boxShadow: "0 4px 32px #95c9ac18" }}
@@ -241,8 +241,8 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-full md:rounded-2xl p-6 md:p-7 w-full md:w-60 group shadow-sm"
-            style={{ minWidth: 170, minHeight: 170 }}
+            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-2xl p-6 md:p-7 w-full group shadow-sm"
+            style={{ minHeight: 170 }}
           >
             <span className="bg-[#e1fcef] rounded-full p-4 mb-4">
               <svg width={40} height={40} fill="none" viewBox="0 0 24 24">
@@ -263,8 +263,8 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.19 }}
-            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-full md:rounded-2xl p-6 md:p-7 w-full md:w-60 group shadow-sm"
-            style={{ minWidth: 170, minHeight: 170 }}
+            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-2xl p-6 md:p-7 w-full group shadow-sm"
+            style={{ minHeight: 170 }}
           >
             <span className="bg-[#e1fcef] rounded-full p-4 mb-4">
               <svg width={40} height={40} fill="none" viewBox="0 0 24 24">
@@ -285,8 +285,8 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.28 }}
-            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-full md:rounded-2xl p-6 md:p-7 w-full md:w-60 group shadow-sm"
-            style={{ minWidth: 170, minHeight: 170 }}
+            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-2xl p-6 md:p-7 w-full group shadow-sm"
+            style={{ minHeight: 170 }}
           >
             <span className="bg-[#e1fcef] rounded-full p-4 mb-4">
               <svg width={40} height={40} fill="none" viewBox="0 0 24 24">
@@ -308,8 +308,8 @@ export default function HomePage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.37 }}
-            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-full md:rounded-2xl p-6 md:p-7 w-full md:w-60 group shadow-sm"
-            style={{ minWidth: 170, minHeight: 170 }}
+            className="flex flex-col items-center bg-[#f5faf7] hover:ring-2 hover:ring-[#9bcbb2]/50 transition rounded-2xl p-6 md:p-7 w-full group shadow-sm"
+            style={{ minHeight: 170 }}
           >
             <span className="bg-[#e1fcef] rounded-full p-4 mb-4">
               <svg width={40} height={40} fill="none" viewBox="0 0 24 24">
@@ -330,8 +330,8 @@ export default function HomePage() {
 
       <section className="py-14 px-4 bg-[#f8fcf9] border-t border-green-100">
         <div className="max-w-3xl mx-auto text-center">
-          <h3 className="text-2xl font-bold text-green-700 mb-3">Need Expert Advice or Support?</h3>
-          <p className="text-gray-700 text-lg mb-5">
+          <h3 className="text-xl md:text-2xl font-bold text-green-700 mb-3">Need Expert Advice or Support?</h3>
+          <p className="text-gray-700 text-base md:text-lg mb-5 px-2">
             Whether you want to bring your business idea to life or need guidance from experienced minds —
             we're here to support you.
           </p>
@@ -346,8 +346,8 @@ export default function HomePage() {
       {ads.length > 0 && (
         <section className="py-16 bg-white px-4">
           <div className="max-w-6xl mx-auto">
-            <h3 className="text-3xl font-bold text-center text-green-800 mb-10">Sponsored By </h3>
-            <div className="flex flex-wrap justify-center gap-6">
+            <h3 className="text-2xl md:text-3xl font-bold text-center text-green-800 mb-10">Sponsored By </h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
               {ads.map((ad, index) => (
                 <div
                   key={ad._id || index}
@@ -387,17 +387,17 @@ export default function HomePage() {
       )}
 
       {/* Stay Updated Section */}
-      <section className="py-16 bg-gradient-to-b from-[#f5faf7] via-[#f8fcf9] to-[#f5faf7]">
-        <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-md p-8 text-center">
-          <h3 className="text-xl font-bold mb-2">Stay Updated</h3>
-          <p className="text-gray-600 mb-6">
+      <section className="py-16 bg-gradient-to-b from-[#f5faf7] via-[#f8fcf9] to-[#f5faf7] px-4">
+        <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-md p-6 md:p-8 text-center">
+          <h3 className="text-lg md:text-xl font-bold mb-2">Stay Updated</h3>
+          <p className="text-gray-600 text-sm md:text-base mb-6 px-2">
             Subscribe to get full access to all ideas and join our community of innovators
           </p>
           <form className="flex gap-2 items-center justify-center">
 
             <SubscribeButton />
           </form>
-          <div className="text-s text-gray-400 mt-2">
+          <div className="text-xs md:text-sm text-gray-400 mt-2">
             Get exclusive access to premium content.
           </div>
         </div>
