@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowUpRight, X, ArrowLeft } from "lucide-react";
+import { ArrowUpRight, X, ArrowLeft, ThumbsUp } from "lucide-react";
 import axios from "axios";
 import Footer from "../../components/Footer/page";
 import SubscribeButton from "../../components/SubscribeButton/page";
@@ -10,6 +10,7 @@ import SubscribeButton from "../../components/SubscribeButton/page";
 export default function ApprovedIdeasPage() {
   const [ideas, setIdeas] = useState([]);
   const [shareCopiedId, setShareCopiedId] = useState(null);
+  const [likedIdeas, setLikedIdeas] = useState({}); // Track likes for each idea
 
   const [ads, setAds] = useState([]);
   const [loadingIdeas, setLoadingIdeas] = useState(true);
@@ -26,7 +27,20 @@ export default function ApprovedIdeasPage() {
     axios
       .get("http://localhost:5000/api/approved-ideas")
       .then((res) => {
-        setIdeas(res.data || []);
+        const ideasData = res.data || [];
+        setIdeas(ideasData);
+
+        // Initialize like states
+        const initialLikedState = {};
+        const subscriberEmail = typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
+
+        ideasData.forEach(idea => {
+          initialLikedState[idea._id] = {
+            likes: idea.likes || 0,
+            liked: subscriberEmail && idea.likedBy?.includes(subscriberEmail) || false
+          };
+        });
+        setLikedIdeas(initialLikedState);
         setLoadingIdeas(false);
       })
       .catch(() => setLoadingIdeas(false));
@@ -89,6 +103,31 @@ export default function ApprovedIdeasPage() {
       setTimeout(() => setShareCopiedId(null), 1600);
     } catch (err) {
       alert("Link: " + shareUrl);
+    }
+  };
+
+  const handleLike = async (ideaId) => {
+    const subscriberEmail = typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
+
+    if (!subscriberEmail) {
+      alert("You must subscribe to like an idea");
+      return;
+    }
+
+    try {
+      const res = await axios.post(`http://localhost:5000/api/${ideaId}/like`, {
+        email: subscriberEmail,
+      });
+
+      setLikedIdeas(prev => ({
+        ...prev,
+        [ideaId]: {
+          likes: res.data.likes,
+          liked: res.data.liked
+        }
+      }));
+    } catch (err) {
+      console.error("Like error:", err);
     }
   };
 
@@ -244,6 +283,18 @@ export default function ApprovedIdeasPage() {
                       >
                         Read Full Article
                         <ArrowUpRight size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleLike(idea._id)}
+                        className="flex items-center gap-1 px-3 py-2 rounded hover:bg-green-50 transition border border-gray-200"
+                        title="Like this idea"
+                      >
+                        <span className={`text-lg ${likedIdeas[idea._id]?.liked ? "text-green-600" : "text-gray-500"}`}>
+                          👍
+                        </span>
+                        <span className="text-sm font-medium text-gray-700">
+                          {likedIdeas[idea._id]?.likes || 0}
+                        </span>
                       </button>
                       <div className="relative">
                         <button

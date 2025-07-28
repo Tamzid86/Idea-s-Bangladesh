@@ -126,7 +126,7 @@ export default function BanglaBlogs() {
 
         const handleRead = () => {
             if (subscriberEmail && subscriberName) {
-                router.push(`/from-the-book/${blog._id}`);
+                router.push(`/Bangla-blogs/${blog._id}`);
             } else {
                 setShowModal(true);
             }
@@ -397,11 +397,11 @@ export default function BanglaBlogs() {
                             </svg>
                         </span>
                         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-                            বাংলা ব্লগ
+                            অনুভূতির পাতা
                         </h1>
                     </div>
                     <p className="text-gray-600 text-lg max-w-2xl mb-6">
-                        বাংলাদেশের প্রেক্ষাপটে প্রকাশিত কাজ এবং গবেষণা থেকে নির্বাচিত ধারণা এবং অন্তর্দৃষ্টি।
+                        লেখা হল অনুভূতির সেতু, যা হৃদয় থেকে হৃদয়ে পৌঁছে দেয়।
                     </p>
                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <motion.input
@@ -409,7 +409,7 @@ export default function BanglaBlogs() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.35 }}
                             className="w-full max-w-lg px-5 py-3 border rounded-lg focus:outline-none focus:ring focus:ring-green-100 transition bg-white"
-                            placeholder="ধারণা বা বিভাগ খুঁজুন..."
+                            placeholder="খুঁজুন..."
                             value={search}
                             onChange={(e) => {
                                 setSearch(e.target.value);
@@ -423,7 +423,7 @@ export default function BanglaBlogs() {
                             href="/from-the-book"
                             className="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center gap-2 whitespace-nowrap"
                         >
-                            English Blog
+                            English 
                             <ArrowUpRight size={16} />
                         </motion.a>
                     </div>

@@ -208,10 +208,10 @@ export default function BlogDetailsPage({ params }) {
       <div className="max-w-2xl mx-auto">
         {/* Back Button */}
         <button
-          onClick={() => router.push("/from-the-book")}
+          onClick={() => router.push("/Bangla-blogs")}
           className="flex items-center gap-1 text-green-700 hover:underline mb-8 text-sm bg-transparent border-none px-0 py-0"
         >
-          <ArrowLeft size={16} /> Back to From the Book
+          <ArrowLeft size={16} /> ফিরে যান
         </button>
         {/* Download as PDF */}
         {/* <button
@@ -290,10 +290,10 @@ export default function BlogDetailsPage({ params }) {
         {/* Back Button (bottom) */}
         <div className="mt-10">
           <button
-            onClick={() => router.push("/from-the-book")}
+            onClick={() => router.push("/Bangla-blogs")}
             className="flex items-center gap-1 px-4 py-2 bg-gray-100 text-gray-800 rounded hover:bg-green-50 border border-gray-200"
           >
-            <ArrowLeft size={16} /> Back to All Articles
+            <ArrowLeft size={16} /> ফিরে যান
           </button>
         </div>
       </div>

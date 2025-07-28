@@ -3,7 +3,7 @@ const Idea = require('../models/UserIdea');
 // User submits an idea
 const submitIdea = async (req, res) => {
   try {
-    const { title, description, author } = req.body; 
+    const { title, description, author } = req.body;
     let imageUrl = null;
     if (req.file && req.file.path) imageUrl = req.file.path;
 
@@ -11,7 +11,7 @@ const submitIdea = async (req, res) => {
       title,
       description,
       imageUrl,
-      author, 
+      author,
       status: "pending"
     });
 
@@ -113,4 +113,43 @@ const deleteIdea = async (req, res) => {
   }
 };
 
-module.exports = { submitIdea, getPendingIdeas, approveIdea, rejectIdea, getApprovedIdeas, getApprovedIdea, likeBlog, unlikeBlog, deleteIdea };
+// Like/Unlike idea
+const likeIdea = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { email } = req.body;
+
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+
+    const idea = await Idea.findById(id);
+    if (!idea) {
+      return res.status(404).json({ message: "Idea not found" });
+    }
+
+    const hasLiked = idea.likedBy.includes(email);
+
+    if (hasLiked) {
+      // Unlike: remove email from likedBy array and decrement likes
+      idea.likedBy = idea.likedBy.filter(userEmail => userEmail !== email);
+      idea.likes = Math.max(0, idea.likes - 1);
+    } else {
+      // Like: add email to likedBy array and increment likes
+      idea.likedBy.push(email);
+      idea.likes += 1;
+    }
+
+    await idea.save();
+
+    res.json({
+      likes: idea.likes,
+      liked: !hasLiked,
+      message: hasLiked ? "Idea unliked" : "Idea liked"
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to like/unlike idea", error: error.message });
+  }
+};
+
+module.exports = { submitIdea, getPendingIdeas, approveIdea, rejectIdea, getApprovedIdeas, getApprovedIdea, likeBlog, unlikeBlog, deleteIdea, likeIdea };

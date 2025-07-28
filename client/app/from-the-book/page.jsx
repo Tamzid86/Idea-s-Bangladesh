@@ -423,7 +423,7 @@ export default function FromBookPage() {
               href="/Bangla-blogs"
               className="bg-green-400 text-white px-6 py-3 rounded-lg font-normal hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap"
             >
-              বাংলা ব্লগ
+              বাংলা 
               <ArrowUpRight size={16} />
             </motion.a>
           </div>

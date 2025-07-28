@@ -9,6 +9,7 @@ const ideaSchema = mongoose.Schema(
     imageUrl: { type: String, default: null },
     status: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     likes: { type: Number, default: 0 },
+    likedBy: { type: [String], default: [] }, // Array of subscriber emails who liked this idea
     submittedAt: { type: Date, default: Date.now }
   }
 );
