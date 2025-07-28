@@ -21,6 +21,11 @@ const createAd = async (req, res) => {
       return res.status(400).json({ message: "Title, description, link, and daysActive are required" });
     }
 
+    let sanitizedLink = link.trim();
+    if (!/^https?:\/\//i.test(sanitizedLink)) {
+      sanitizedLink = `https://${sanitizedLink}`;
+    }
+
     let imageUrl = req.body.imageUrl || null;
     if (req.file && req.file.buffer) {
       imageUrl = await uploadToCloudinary(req.file);
@@ -30,13 +35,15 @@ const createAd = async (req, res) => {
 
     const expiresAt = new Date(Date.now() + parseInt(daysActive) * 24 * 60 * 60 * 1000);
 
-    const ad = new Ad({ title, description, imageUrl, link, expiresAt });
+    const ad = new Ad({ title, description, imageUrl, link: sanitizedLink, expiresAt });
     await ad.save();
+
     res.status(201).json(ad);
   } catch (err) {
     res.status(500).json({ message: "Failed to create ad", error: err.message });
   }
 };
+
 
 const getAds = async (req, res) => {
   try {

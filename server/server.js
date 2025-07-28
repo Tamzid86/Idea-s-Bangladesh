@@ -103,3 +103,19 @@ const newsletterRoutes = require('./routes/newsletter');
 app.use('/api', newsletterRoutes);
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+//for auto add deletion
+const cron = require('node-cron');
+const Ad = require('./models/Ad'); // your ad model
+
+// Run every day at midnight
+cron.schedule('0 0 * * *', async () => {
+  try {
+    const now = new Date();
+    const result = await Ad.deleteMany({ expiresAt: { $lt: now } });
+    console.log(`🗑️ Deleted ${result.deletedCount} expired ads`);
+  } catch (error) {
+    console.error('Error deleting expired ads:', error);
+  }
+});

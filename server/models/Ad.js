@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { link } = require("../routes/postRoutes");
 
+
+
 const adSchema = mongoose.Schema(
   {
     title: {

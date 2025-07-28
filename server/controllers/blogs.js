@@ -212,8 +212,26 @@ const showSubscriberNumber = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+const getBanglaBlogs = async (req, res) => {
+  try {
+    // Alternative approach: fetch all blogs and filter on the server side
+    const allBlogs = await Blog.find().sort({ createdAt: -1 });
+    
+    // Filter blogs that contain Bangla characters
+    const banglaBlogs = allBlogs.filter(blog => {
+      const banglaRegex = /[\u0980-\u09FF]/;
+      return banglaRegex.test(blog.title) || banglaRegex.test(blog.description);
+    });
+
+    res.status(200).json(banglaBlogs);
+  } catch (error) {
+    console.error("Error fetching Bangla blogs:", error);
+    res.status(500).json({ message: "Failed to fetch Bangla blogs", error: error.message });
+  }
+};
+
 
 
 
 module.exports = { createBlog, getBlogs, updateBlog, deleteBlog, getBlogById, createCategory, deleteCategory,
-  getCategoryById, getAllCategories, showAllSubscribers, showSubscriberNumber };
+  getCategoryById, getAllCategories, showAllSubscribers, showSubscriberNumber, getBanglaBlogs };
