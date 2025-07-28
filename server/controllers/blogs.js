@@ -8,7 +8,7 @@ const Subscriber = require("../models/Subscriber");
 // Create a new blog
 const createBlog = async (req, res) => {
   try {
-    const { title, description, summary, author, read_time, category } = req.body;
+    const { title, description, summary, author, read_time, category, type } = req.body;
     if (!title || !description || !summary) {
       return res.status(400).json({ message: "Title, description, and summary are required" });
     }
@@ -39,6 +39,7 @@ const createBlog = async (req, res) => {
       read_time: read_time || null,
       category: category || null,
       imageUrl,
+      type: type || "English", 
     });
     await newBlog.save();
 
@@ -212,26 +213,24 @@ const showSubscriberNumber = async (req, res) => {
     res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
+
 const getBanglaBlogs = async (req, res) => {
   try {
-    // Alternative approach: fetch all blogs and filter on the server side
-    const allBlogs = await Blog.find().sort({ createdAt: -1 });
-    
-    // Filter blogs that contain Bangla characters
-    const banglaBlogs = allBlogs.filter(blog => {
-      const banglaRegex = /[\u0980-\u09FF]/;
-      return banglaRegex.test(blog.title) || banglaRegex.test(blog.description);
-    });
-
-    res.status(200).json(banglaBlogs);
+    const blogs = await Blog.find({ type: "Bangla" }).sort({ createdAt: -1 });
+    res.status(200).json(blogs);
   } catch (error) {
-    console.error("Error fetching Bangla blogs:", error);
-    res.status(500).json({ message: "Failed to fetch Bangla blogs", error: error.message });
+    res.status(500).json({ message: "Internal server error", error: error.message });
   }
 };
 
-
-
+const getEnglishBlogs = async (req, res) => {
+  try {
+    const blogs = await Blog.find({ type: "English" }).sort({ createdAt: -1 });
+    res.status(200).json(blogs);
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error", error: error.message });
+  }
+};
 
 module.exports = { createBlog, getBlogs, updateBlog, deleteBlog, getBlogById, createCategory, deleteCategory,
-  getCategoryById, getAllCategories, showAllSubscribers, showSubscriberNumber, getBanglaBlogs };
+  getCategoryById, getAllCategories, showAllSubscribers, showSubscriberNumber, getBanglaBlogs, getEnglishBlogs };

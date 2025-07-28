@@ -46,6 +46,11 @@ likedBy: {
   type: [String],
   default: []
 },
+type:{
+  type: String,
+  enum: ["Bangla", "English"],
+  default: "English"
+},
 
    category: {
        type: String,
