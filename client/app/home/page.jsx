@@ -6,6 +6,7 @@ import axios from "axios";
 import Navbar from "../../components/Navbar/page";
 import SubscribeButton from "../../components/SubscribeButton/page"
 import Footer from "../../components/Footer/page";
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 export default function HomePage() {
   const [ads, setAds] = useState([]);
@@ -13,7 +14,7 @@ export default function HomePage() {
   useEffect(() => {
     const fetchAds = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/ads");
+        const res = await axios.get(`${apiUrl}/ads`);
         if (Array.isArray(res.data) && res.data.length > 0) {
           setAds(res.data);
         }
@@ -347,7 +348,7 @@ export default function HomePage() {
         <section className="py-16 bg-white px-4">
           <div className="max-w-6xl mx-auto">
             <h3 className="text-2xl md:text-3xl font-bold text-center text-green-800 mb-10">Sponsored By </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 justify-items-center">
+            <div className="flex flex-wrap justify-center gap-6">
               {ads.map((ad, index) => (
                 <div
                   key={ad._id || index}

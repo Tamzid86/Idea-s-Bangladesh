@@ -9,17 +9,17 @@ export default function FromTheBook() {
   const [ads, setAds] = useState([]);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
   // Fetch blogs
   useEffect(() => {
-    fetch(`http://localhost:5000/api/blogs`)
+    fetch(`${apiUrl}/blogs`)
       .then((res) => res.json())
       .then((data) => setBlogs(data));
   }, []);
 
   // Fetch ads
   useEffect(() => {
-    fetch(`http://localhost:5000/api/ads`)
+    fetch(`${apiUrl}/ads`)
       .then((res) => res.json())
       .then((data) => setAds(data));
   }, []);

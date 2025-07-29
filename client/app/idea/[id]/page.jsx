@@ -24,6 +24,7 @@ export default function ApprovedIdeaDetailPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [isSubscriber, setIsSubscriber] = useState(false);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
 
   // Check if user is a subscriber on mount
   useEffect(() => {
@@ -35,7 +36,7 @@ export default function ApprovedIdeaDetailPage({ params }) {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5000/api/approved-idea/${id}`)
+      .get(`${apiUrl}/approved-idea/${id}`)
       .then((res) => {
         setIdea(res.data);
         setLoading(false);

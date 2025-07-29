@@ -9,6 +9,7 @@ export default function AdminLoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -19,7 +20,7 @@ export default function AdminLoginPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await axios.post("http://localhost:5000/api/login", form);
+      const res = await axios.post(`${apiUrl}/login`, form);
       // Assuming backend returns { token: "..." }
       localStorage.setItem("adminToken", res.data.token);
       router.push("/admin/dashboard");

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
@@ -10,20 +10,22 @@ export default function NewsletterComposePage() {
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSending(true);
-    setResult(null);
-     useEffect(() => {
+   useEffect(() => {
         const token = localStorage.getItem("adminToken");
         if (!token) {
           router.push("/admin");
         }
       }, []);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    setResult(null);
+    
 
     try {
-      const res = await axios.post("http://localhost:5000/api/send-newsletter", {
+      const res = await axios.post(`${apiUrl}/send-newsletter`, {
         subject,
         content,
       });

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const mainImageUpload = require("../middleware/upload"); // For main blog image
+const mainImageUpload = require("../middleware/upload"); 
 const {
   updateBlog,
   deleteBlog,
@@ -24,23 +24,19 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// ==================== Blog Routes ==================== //
 router.post('/create-blog', mainImageUpload.single('image'), createBlog);
 router.get('/blogs', getBlogs);
 router.put('/blogs/:id', mainImageUpload.single('image'), updateBlog);
 router.delete('/blogs/:id', deleteBlog);
 
-// ==================== Category Routes ==================== //
 router.post('/category', createCategory);
 router.delete('/category/:id', deleteCategory);
 router.get('/category/:id', getCategoryById);
 router.get('/category', getAllCategories);
 
-// ==================== Subscriber Routes ==================== //
 router.get('/subscribers', showAllSubscribers);
 router.get('/subscribers/count', showSubscriberNumber);
 
-// ==================== TinyMCE Inline Image Upload ==================== //
 // Using memory storage because we're uploading directly to Cloudinary
 const inlineUpload = multer({ storage: multer.memoryStorage() });
 

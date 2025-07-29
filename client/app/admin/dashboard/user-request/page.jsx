@@ -10,7 +10,7 @@ export default function HandleRequestsPage() {
   const [approvedIdeas, setApprovedIdeas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [approvedLoading, setApprovedLoading] = useState(true);
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
   // Modal state
   const [modalIdea, setModalIdea] = useState(null);
 
@@ -25,7 +25,7 @@ export default function HandleRequestsPage() {
   const fetchPendingIdeas = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/pending-ideas");
+      const res = await axios.get(`${apiUrl}/pending-ideas`);
       setPendingIdeas(res.data);
     } catch {
       setPendingIdeas([]);
@@ -37,7 +37,7 @@ export default function HandleRequestsPage() {
   const fetchApprovedIdeas = async () => {
     setApprovedLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/approved-ideas");
+      const res = await axios.get(`${apiUrl}/approved-ideas`);
       setApprovedIdeas(res.data);
     } catch {
       setApprovedIdeas([]);
@@ -54,7 +54,7 @@ export default function HandleRequestsPage() {
   const handleApprove = async (id) => {
     if (!window.confirm("Approve this idea?")) return;
     try {
-      await axios.patch(`http://localhost:5000/api/approve-idea/${id}`);
+      await axios.patch(`${apiUrl}/approve-idea/${id}`);
       setPendingIdeas(pendingIdeas.filter((idea) => idea._id !== id));
       fetchApprovedIdeas(); // update the approved list
     } catch {
@@ -66,7 +66,7 @@ export default function HandleRequestsPage() {
   const handleReject = async (id) => {
     if (!window.confirm("Reject this idea?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/reject-idea/${id}`);
+      await axios.delete(`${apiUrl}/reject-idea/${id}`);
       setPendingIdeas(pendingIdeas.filter((idea) => idea._id !== id));
     } catch {
       alert("Failed to reject idea.");
@@ -77,7 +77,7 @@ export default function HandleRequestsPage() {
   const handleDeleteApproved = async (id) => {
     if (!window.confirm("Delete this approved idea?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/delete-idea/${id}`);
+      await axios.delete(`${apiUrl}/delete-idea/${id}`);
       setApprovedIdeas(approvedIdeas.filter((idea) => idea._id !== id));
     } catch {
       alert("Failed to delete approved idea.");

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export default function SubscribeButton() {
    const [subscriberName, setSubscriberName] = useState(null);
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
   useEffect(() => {
     if (typeof window !== "undefined") {
       const name = localStorage.getItem("subscriberName");
@@ -21,7 +21,7 @@ export default function SubscribeButton() {
           Welcome, {subscriberName}!
         </div>
       ) :(
-        <Link href="http://localhost:5000/api/google">
+        <Link href={`${apiUrl}/google`}>
             <motion.button
               whileHover={{
                 scale: 1.07,

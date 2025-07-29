@@ -6,12 +6,12 @@ import { useState, useEffect } from "react";
 export default function BlogDetail() {
   const params = useParams();
   const id = params.id;
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
   const [blog, setBlog] = useState(null);
 
   useEffect(() => {
     if (id) {
-      fetch(`http://localhost:5000/api/blogs/${id}`)
+      fetch(`${apiUrl}/blogs/${id}`)
         .then(res => res.json())
         .then(data => setBlog(data));
     }

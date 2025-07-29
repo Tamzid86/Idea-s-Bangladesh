@@ -11,7 +11,7 @@ export default function CreateBlogPage() {
     const [creating, setCreating] = useState(false);
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
-
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
     const [form, setForm] = useState({
         title: "",
         summary: "",
@@ -31,7 +31,7 @@ export default function CreateBlogPage() {
 
     useEffect(() => {
         axios
-            .get("http://localhost:5000/api/category")
+            .get(`${apiUrl}/category`)
             .then((res) => setCategories(res.data))
             .catch(() => setCategories([]));
     }, []);
@@ -60,7 +60,7 @@ export default function CreateBlogPage() {
         formData.append("type", form.type);
 
         try {
-            await axios.post("http://localhost:5000/api/create-blog", formData, {
+            await axios.post(`${apiUrl}/create-blog`, formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
             setSuccess("Blog created successfully!");
@@ -117,8 +117,8 @@ export default function CreateBlogPage() {
                                     "undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code",
                                 automatic_uploads: true,
                                 images_upload_url:
-                                    "http://localhost:5000/api/upload-inline-image",
-                                paste_data_images: true,
+                                    `${apiUrl}/upload-inline-image`,
+                                paste_data_images: true, 
                             }}
                             onEditorChange={(content) =>
                                 setForm({ ...form, description: content })

@@ -64,12 +64,12 @@ export default function BanglaBlogs() {
     const [currentSummary, setCurrentSummary] = useState("");
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
     // Fetch blogs and ads from API
     useEffect(() => {
         setLoadingBlogs(true);
         axios
-            .get("http://localhost:5000/api/blogs/bangla")
+            .get(`${apiUrl}/blogs/bangla`)
             .then((res) => {
                 setBlogs(res.data);
                 setLoadingBlogs(false);
@@ -80,7 +80,7 @@ export default function BanglaBlogs() {
     useEffect(() => {
         setLoadingAds(true);
         axios
-            .get("http://localhost:5000/api/ads")
+            .get(`${apiUrl}/ads`)
             .then((res) => {
                 setAds(res.data || []);
                 setLoadingAds(false);
@@ -150,7 +150,7 @@ export default function BanglaBlogs() {
             }
 
             try {
-                const res = await axios.post(`http://localhost:5000/api/blogs/bangla/${blog._id}/like`, {
+                const res = await axios.post(`${apiUrl}/blogs/bangla/${blog._id}/like`, {
                     email: subscriberEmail,
                 });
 
@@ -187,7 +187,7 @@ export default function BanglaBlogs() {
 
         const fetchComments = async () => {
             try {
-                const res = await axios.get(`http://localhost:5000/api/comments/${blog._id}`);
+                const res = await axios.get(`${apiUrl}/comments/${blog._id}`);
                 setComments(res.data);
             } catch (err) {
                 console.error("মন্তব্য লোড করতে এরর:", err);
@@ -197,7 +197,7 @@ export default function BanglaBlogs() {
         const handleCommentSubmit = async () => {
             if (!newComment.trim()) return;
             try {
-                const res = await axios.post("http://localhost:5000/api/comments", {
+                const res = await axios.post(`${apiUrl}/comments`, {
                     blogId: blog._id,
                     name: subscriberName,
                     email: subscriberEmail,

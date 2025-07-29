@@ -35,7 +35,7 @@ export default function BlogDetailsPage({ params }) {
   const [loading, setLoading] = useState(true);
   const [isSubscriber, setIsSubscriber] = useState(false);
   const router = useRouter();
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
   // Check subscription on mount
   useEffect(() => {
     const email = localStorage.getItem("subscriberEmail");
@@ -61,7 +61,7 @@ export default function BlogDetailsPage({ params }) {
   useEffect(() => {
     setLoading(true);
     axios
-      .get(`http://localhost:5000/api/blogs/${id}`)
+      .get(`${apiUrl}/blogs/${id}`)
       .then((res) => {
         setBlog(res.data);
         setLoading(false);

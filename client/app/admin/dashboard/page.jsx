@@ -20,6 +20,7 @@ export default function AdminDashboard() {
   const [newCat, setNewCat] = useState("");
   const [catLoading, setCatLoading] = useState(false);
   const router = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
 
 
   const [subscribers, setSubscribers] = useState([]);
@@ -28,7 +29,7 @@ const [showSubscribers, setShowSubscribers] = useState(false);
 useEffect(() => {
   // Load subscribers only when modal is opened (or you can preload if you want)
   if (showSubscribers) {
-    axios.get("http://localhost:5000/api/subscribers")
+    axios.get(`${apiUrl}/subscribers`)
       .then(res => setSubscribers(res.data))
       .catch(() => setSubscribers([]));
   }
@@ -48,7 +49,7 @@ useEffect(() => {
       setLoading(true);
       const token = localStorage.getItem("adminToken"); // JWT
       try {
-        const res = await axios.get("http://localhost:5000/api/blogs", {
+        const res = await axios.get(`${apiUrl}/blogs`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setBlogs(res.data);
@@ -69,7 +70,7 @@ useEffect(() => {
   const fetchCategories = async () => {
     setCatLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/category");
+      const res = await axios.get(`${apiUrl}/category`);
       setCategories(res.data);
     } catch {
       setCategories([]);
@@ -113,7 +114,7 @@ useEffect(() => {
     const token = localStorage.getItem("adminToken");
     try {
       await axios.put(
-        `http://localhost:5000/api/blogs/${id}`,
+        `${apiUrl}/blogs/${id}`,
         editForm,
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -135,7 +136,7 @@ useEffect(() => {
     const token = localStorage.getItem("adminToken");
     try {
       await axios.delete(
-        `http://localhost:5000/api/blogs/${id}`,
+        `${apiUrl}/blogs/${id}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setBlogs((prev) => prev.filter((b) => b._id !== id));
@@ -150,7 +151,7 @@ useEffect(() => {
     setCatLoading(true);
     try {
       console.log("Adding category:", newCat);
-      await axios.post("http://localhost:5000/api/category", { name: newCat });
+      await axios.post(`${apiUrl}/category`, { name: newCat });
       setNewCat("");
       setCatModal(false);
       fetchCategories();
@@ -164,7 +165,7 @@ useEffect(() => {
   const handleRemoveCategory = async (catId) => {
     setCatLoading(true);
     try {
-      await axios.delete(`http://localhost:5000/api/category/${catId}`);
+      await axios.delete(`${apiUrl}/category/${catId}`);
       fetchCategories();
     } catch {
       alert("Failed to delete category");
@@ -211,7 +212,7 @@ useEffect(() => {
     formData.append("category", form.category);
 
     try {
-      await axios.post("http://localhost:5000/api/create-blog", formData, {
+      await axios.post(`${apiUrl}/create-blog`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       setSuccess("Blog created successfully!");
@@ -367,7 +368,7 @@ useEffect(() => {
                           toolbar:
                             'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code',
                           automatic_uploads: true,
-                          images_upload_url: 'http://localhost:5000/api/upload-inline-image',
+                          images_upload_url: `${apiUrl}/upload-inline-image`,
                           paste_data_images: true,
                         }}
                       onEditorChange={(content) => setForm({ ...form, description: content })}

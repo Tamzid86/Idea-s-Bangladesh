@@ -12,7 +12,7 @@ export default function AdminAdsPage() {
   const [editAd, setEditAd] = useState(null);
   const router = useRouter();
   const [imagePreview, setImagePreview] = useState(null);
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -33,7 +33,7 @@ export default function AdminAdsPage() {
   const fetchAds = async () => {
     setLoading(true);
     try {
-      const res = await axios.get("http://localhost:5000/api/ads");
+      const res = await axios.get(`${apiUrl}/ads`);
       setAds(res.data);
     } catch {
       setAds([]);
@@ -73,12 +73,12 @@ export default function AdminAdsPage() {
     try {
       if (editAd) {
         await axios.put(
-          `http://localhost:5000/api/ads/${editAd._id}`,
+          `${apiUrl}/ads/${editAd._id}`,
           fd,
           { headers: { "Content-Type": "multipart/form-data" } }
         );
       } else {
-        await axios.post("http://localhost:5000/api/ads", fd, {
+        await axios.post(`${apiUrl}/ads`, fd, {
           headers: { "Content-Type": "multipart/form-data" },
         });
       }
@@ -118,7 +118,7 @@ export default function AdminAdsPage() {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure?")) return;
     try {
-      await axios.delete(`http://localhost:5000/api/ads/${id}`);
+      await axios.delete(`${apiUrl}/ads/${id}`);
       fetchAds();
     } catch {
       alert("Failed to delete ad.");

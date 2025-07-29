@@ -45,9 +45,12 @@ const createBlog = async (req, res) => {
 
     res.status(201).json(newBlog);
   } catch (error) {
-    console.error("Create blog error:", error);
-    res.status(500).json({ message: "Internal server error", error: error.message });
-  }
+  console.error("Create blog error:", error);  // full stack trace
+  res.status(500).json({
+    message: "Internal server error",
+    error: error.message || error,
+  });
+}
 };
 
 // Fetch all blogs

@@ -12,7 +12,7 @@ export default function SubmitIdeaPage() {
   const [error, setError] = useState("");
   const [subscriberName, setSubscriberName] = useState("");
   const fileRef = useRef();
-
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
   // Check subscription on mount
   useEffect(() => {
     const name = localStorage.getItem("subscriberName");
@@ -51,7 +51,7 @@ export default function SubmitIdeaPage() {
       formData.append("author", subscriberName); // Attach author
       if (image) formData.append("image", image);
 
-      const res = await fetch("http://localhost:5000/api/submit-idea", {
+      const res = await fetch(`${apiUrl}/submit-idea`, {
         method: "POST",
         body: formData,
       });

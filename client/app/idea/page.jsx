@@ -19,13 +19,14 @@ export default function ApprovedIdeasPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const ideasPerPage = 5;
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
 
   const router = useRouter();
 
   useEffect(() => {
     setLoadingIdeas(true);
     axios
-      .get("http://localhost:5000/api/approved-ideas")
+      .get(`${apiUrl}/approved-ideas`)
       .then((res) => {
         const ideasData = res.data || [];
         setIdeas(ideasData);
@@ -49,7 +50,7 @@ export default function ApprovedIdeasPage() {
   useEffect(() => {
     setLoadingAds(true);
     axios
-      .get("http://localhost:5000/api/ads")
+      .get(`${apiUrl}/ads`)
       .then((res) => {
         setAds(res.data || []);
         setLoadingAds(false);
@@ -115,7 +116,7 @@ export default function ApprovedIdeasPage() {
     }
 
     try {
-      const res = await axios.post(`http://localhost:5000/api/${ideaId}/like`, {
+      const res = await axios.post(`${apiUrl}/${ideaId}/like`, {
         email: subscriberEmail,
       });
 
