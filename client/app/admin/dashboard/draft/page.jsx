@@ -7,7 +7,7 @@ import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
 import Image from "@tiptap/extension-image";
 import Color from "@tiptap/extension-color";
-import TextStyle from "@tiptap/extension-text-style";
+import {TextStyle} from "@tiptap/extension-text-style";
 
 export default function AdminBlogWritePage() {
   const [title, setTitle] = useState("");

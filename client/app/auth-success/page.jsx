@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function AuthSuccess() {
+function AuthSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("Processing subscription...");
@@ -49,5 +49,13 @@ export default function AuthSuccess() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function AuthSuccess() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AuthSuccessContent />
+    </Suspense>
   );
 }
