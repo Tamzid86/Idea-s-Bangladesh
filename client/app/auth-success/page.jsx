@@ -1,4 +1,5 @@
 "use client";
+import React, { Suspense } from "react";
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
@@ -11,10 +12,7 @@ function AuthSuccessContent() {
     const name = searchParams.get("name");
     const email = searchParams.get("email");
 
-    console.log("Auth success - Name:", name, "Email:", email); // Debug log
-
     if (name && email) {
-      // Decode the URL-encoded parameters
       const decodedName = decodeURIComponent(name);
       const decodedEmail = decodeURIComponent(email);
 
@@ -23,14 +21,10 @@ function AuthSuccessContent() {
 
       setMessage(`Welcome ${decodedName.split(" ")[0]}! Subscription successful!`);
 
-      setTimeout(() => {
-        router.push("/"); // Use push instead of replace, and go to home page
-      }, 2000);
+      setTimeout(() => router.push("/"), 2000);
     } else {
       setMessage("Subscription failed. Redirecting...");
-      setTimeout(() => {
-        router.push("/");
-      }, 1500);
+      setTimeout(() => router.push("/"), 1500);
     }
   }, [router, searchParams]);
 
