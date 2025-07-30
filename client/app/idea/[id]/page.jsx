@@ -200,12 +200,12 @@ export default function ApprovedIdeaDetailPage({ params }) {
         >
           <ArrowLeft size={16} /> Back to All Ideas
         </button>
-        <button
+        {/* <button
           onClick={handleDownloadPdf}
           className="mb-4 flex items-center gap-2 bg-green-200 text-green-900 px-4 py-2 rounded font-semibold hover:bg-green-300 transition"
         >
           Download as PDF
-        </button>
+        </button> */}
 
         <div className="flex items-center justify-center mb-7">
           {idea.imageUrl ? (

@@ -64,7 +64,8 @@ export default function FromBookPage() {
   const [currentSummary, setCurrentSummary] = useState("");
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
+  const [showModal, setShowModal] = useState(false);
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   // Fetch blogs and ads from API
   useEffect(() => {
@@ -113,9 +114,8 @@ export default function FromBookPage() {
   };
 
 
-  function BlogCard({ blog, handleShowSummary }) {
+  function BlogCard({ blog, handleShowSummary, setShowModal }) {
     const router = useRouter();
-    const [showModal, setShowModal] = useState(false);
     const [hovered, setHovered] = useState(false);
     const [shareCopied, setShareCopied] = useState(false);
     const [commentModal, setCommentModal] = useState(false);
@@ -145,8 +145,8 @@ export default function FromBookPage() {
     }, [blog.likedBy, subscriberEmail]);
 
     const handleLike = async () => {
-      if (!subscriberEmail) {
-        alert("You must subscribe to like a blog");
+      if (!subscriberEmail || !subscriberName) {
+        setShowModal(true);
         return;
       }
 
@@ -169,7 +169,10 @@ export default function FromBookPage() {
         text: blog.summary,
         url: shareUrl,
       };
-
+      if (!subscriberEmail || !subscriberName) {
+        setShowModal(true);
+        return;
+      }
       if (navigator.share) {
         try {
           await navigator.share(shareData);
@@ -196,6 +199,10 @@ export default function FromBookPage() {
     };
 
     const handleCommentSubmit = async () => {
+      if (!subscriberEmail) {
+        setShowModal(true);
+        return;
+      }
       if (!newComment.trim()) return;
       try {
         const res = await axios.post(`${apiUrl}/comments`, {
@@ -212,6 +219,10 @@ export default function FromBookPage() {
     };
 
     const openCommentModal = () => {
+      if (!subscriberEmail || !subscriberName) {
+        setShowModal(true);
+        return;
+      }
       setCommentModal(true);
       fetchComments();
     };
@@ -539,7 +550,7 @@ export default function FromBookPage() {
             </div>
           ) : (
             <>
-              {paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} />)}
+              {paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} setShowModal={setShowModal} />)}
 
               {/* Pagination - Shows after posts */}
               {totalPages > 1 && (
@@ -651,6 +662,46 @@ export default function FromBookPage() {
                     {currentSummary}
                   </motion.p>
                 </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+      {/* MODAL for subscribe */}
+      <AnimatePresence>
+        {showModal && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+              onClick={() => setShowModal(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-8 w-full max-w-md"
+            >
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-green-700">
+                  Subscribe Required
+                </h2>
+                <button onClick={() => setShowModal(false)}>
+                  <X size={26} className="text-gray-400 hover:text-green-700" />
+                </button>
+              </div>
+              <p className="text-gray-700 mb-6">
+                You need to subscribe to read the full article. Please subscribe
+                to get access to exclusive content!
+              </p>
+              <div
+                className="w-full  py-2 rounded font-bold "
+                onClick={() => setShowModal(false)}
+              >
+                <SubscribeButton />
               </div>
             </motion.div>
           </>

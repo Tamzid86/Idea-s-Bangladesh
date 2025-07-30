@@ -394,10 +394,9 @@ export default function HomePage() {
           <p className="text-gray-600 text-sm md:text-base mb-6 px-2">
             Subscribe to get full access to all ideas and join our community of innovators
           </p>
-          <form className="flex gap-2 items-center justify-center">
-
+          <div className="flex gap-2 items-center justify-center">
             <SubscribeButton />
-          </form>
+          </div>
           <div className="text-xs md:text-sm text-gray-400 mt-2">
             Get exclusive access to premium content.
           </div>

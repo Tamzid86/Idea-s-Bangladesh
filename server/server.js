@@ -17,8 +17,9 @@ const app = express();
 // Middleware
 app.use(session({
   secret: 'human',
-  resave: false,                
-  saveUninitialized: false}))
+  resave: false,
+  saveUninitialized: false
+}))
 app.use(Passport.initialize());
 app.use(Passport.session());
 
@@ -38,8 +39,8 @@ mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
-.then(() => console.log("MongoDB connected"))
-.catch(err => console.error("MongoDB error:", err));
+  .then(() => console.log("MongoDB connected"))
+  .catch(err => console.error("MongoDB error:", err));
 
 // Start server
 const PORT = process.env.PORT || 5000;
@@ -63,20 +64,30 @@ app.use("/api", userRoutes);
 
 
 app.get('/api/google',
-  Passport.authenticate('google', { scope: ['profile', 'email'] })    
+  Passport.authenticate('google', { scope: ['profile', 'email'] })
 )
 
 app.get('/api/google/callback',
   Passport.authenticate('google', { failureRedirect: '/auth/failure' }),
   (req, res) => {
-    const name = encodeURIComponent(req.user?.name || req.user?.displayName || "");
-    const email = encodeURIComponent(req.user?.email || req.user?.emails?.[0]?.value || "");
-    res.redirect(`http://localhost:3000/auth-success?name=${name}&email=${email}`);
+    try {
+      const name = encodeURIComponent(req.user?.name || req.user?.displayName || "");
+      const email = encodeURIComponent(req.user?.email || req.user?.emails?.[0]?.value || "");
+
+      if (name && email) {
+        res.redirect(`http://localhost:3000/auth-success?name=${name}&email=${email}`);
+      } else {
+        res.redirect('http://localhost:3000/auth-success?error=missing_data');
+      }
+    } catch (error) {
+      console.error('Auth callback error:', error);
+      res.redirect('http://localhost:3000/auth-success?error=server_error');
+    }
   }
 );
 
 
-  app.get('auth/failure',
+app.get('auth/failure',
   (req, res) => {
     res.send("Something went wrong with authentication");
   })
