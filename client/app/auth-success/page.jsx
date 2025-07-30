@@ -1,9 +1,8 @@
 "use client";
-import React, { Suspense } from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-function AuthSuccessContent() {
+export default function AuthSuccess() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [message, setMessage] = useState("Processing subscription...");
@@ -20,7 +19,6 @@ function AuthSuccessContent() {
       localStorage.setItem("subscriberEmail", decodedEmail);
 
       setMessage(`Welcome ${decodedName.split(" ")[0]}! Subscription successful!`);
-
       setTimeout(() => router.push("/"), 2000);
     } else {
       setMessage("Subscription failed. Redirecting...");
@@ -43,13 +41,5 @@ function AuthSuccessContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function AuthSuccess() {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <AuthSuccessContent />
-    </Suspense>
   );
 }
