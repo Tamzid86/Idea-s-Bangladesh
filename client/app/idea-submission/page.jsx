@@ -16,8 +16,30 @@ export default function SubmitIdeaPage() {
     title: "",
     description: ""
   });
+  const [wordCount, setWordCount] = useState(0);
+  const maxWords = 200;
   const fileRef = useRef();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+  // Function to count words in text (excluding HTML tags)
+  const countWords = (text) => {
+    if (!text) return 0;
+    // Remove HTML tags and count words
+    const plainText = text.replace(/<[^>]*>/g, '').trim();
+    if (!plainText) return 0;
+    return plainText.split(/\s+/).length;
+  };
+
+  // Handle description change with word limit
+  const handleDescriptionChange = (content) => {
+    const currentWordCount = countWords(content);
+
+    if (currentWordCount <= maxWords) {
+      setForm({ ...form, description: content });
+      setWordCount(currentWordCount);
+    }
+    // If word count exceeds limit, don't update the content
+  };
   // Check subscription on mount
   useEffect(() => {
     const name = localStorage.getItem("subscriberName");
@@ -66,6 +88,7 @@ export default function SubmitIdeaPage() {
       if (res.ok) {
         setSuccess("Your idea has been submitted for review!");
         setForm({ title: "", description: "" }); // Reset form state
+        setWordCount(0); // Reset word count
         removeImage();
       } else {
         setError(data.message || "Submission failed. Please try again.");
@@ -160,23 +183,49 @@ export default function SubmitIdeaPage() {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-sm font-bold mb-1 text-gray-700">Description</label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="block text-sm font-bold text-gray-700">Description</label>
+                <div className="text-sm text-gray-500">
+                  <span className={`${wordCount >= maxWords ? 'text-red-500 font-semibold' : wordCount >= maxWords * 0.8 ? 'text-yellow-600' : 'text-gray-500'}`}>
+                    {wordCount}/{maxWords} words
+                  </span>
+                </div>
+              </div>
               <Editor
                 apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
                 value={form.description}
                 init={{
-                  plugins: "image table lists link code",
+                  plugins: "image table lists link code wordcount",
                   toolbar:
                     "undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code",
                   automatic_uploads: true,
                   images_upload_url:
                     `${apiUrl}/upload-inline-image`,
                   paste_data_images: true,
+                  setup: (editor) => {
+                    editor.on('keydown', (e) => {
+                      const currentWordCount = countWords(editor.getContent());
+                      // Prevent typing if word limit is reached (except for deletion keys)
+                      if (currentWordCount >= maxWords &&
+                        e.keyCode !== 8 && // Backspace
+                        e.keyCode !== 46 && // Delete
+                        e.keyCode !== 37 && // Left arrow
+                        e.keyCode !== 38 && // Up arrow
+                        e.keyCode !== 39 && // Right arrow
+                        e.keyCode !== 40 && // Down arrow
+                        !e.ctrlKey && !e.metaKey) { // Allow Ctrl/Cmd shortcuts
+                        e.preventDefault();
+                      }
+                    });
+                  }
                 }}
-                onEditorChange={(content) =>
-                  setForm({ ...form, description: content })
-                }
+                onEditorChange={handleDescriptionChange}
               />
+              {wordCount >= maxWords && (
+                <p className="text-red-500 text-xs mt-1">
+                  Word limit reached. You cannot add more words.
+                </p>
+              )}
             </div>
             {/* Image upload */}
             <div>
