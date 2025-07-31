@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowUpRight, Image as ImageIcon, ThumbsUp, Share2, X, MoreVertical } from "lucide-react";
 import axios from "axios";
 import Footer from "../../components/Footer/page";
+import ShareMenu from "../../components/ShareMenu/page";
 // import BlogCard from "../../components/BlogCard/page";
 import SubscribeButton from "../../components/SubscribeButton/page";
 
@@ -124,7 +125,7 @@ export default function FromBookPage() {
     const [likes, setLikes] = useState(blog.likes || 0);
     const [liked, setLiked] = useState(false);
     const [showDropdown, setShowDropdown] = useState(false);
-
+    const shareUrl = `${window.location.origin}/from-the-book/${blog._id}`;
     const subscriberEmail =
       typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
     const subscriberName =
@@ -188,6 +189,14 @@ export default function FromBookPage() {
         alert("Link: " + shareUrl);
       }
     };
+      const handleShareClick = () => {
+    if (!subscriberEmail || !subscriberName) {
+      setShowModal(true); 
+      return false; 
+    }
+    return true;
+  };
+
 
     const fetchComments = async () => {
       try {
@@ -249,12 +258,12 @@ export default function FromBookPage() {
             y: -3,
             boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
           }}
-          className="flex flex-col sm:flex-row w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200"
+          className="flex flex-col sm:flex-row w-full bg-white rounded-xl shadow-sm border transition-all duration-200 relative"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
         >
           {/* Image or title initials */}
-          <div className="w-full sm:w-40 md:w-48 lg:w-56 h-40 sm:h-auto flex items-center justify-center flex-shrink-0">
+          <div className="w-full sm:w-40 md:w-48 lg:w-56 h-40 sm:h-auto flex items-center justify-center flex-shrink-0 rounded-l-xl overflow-hidden">
             {blog.imageUrl ? (
               <img
                 src={blog.imageUrl}
@@ -329,20 +338,15 @@ export default function FromBookPage() {
                   </span>
                   <span className="text-sm font-medium text-gray-700">{likes}</span>
                 </button>
-                <div className="relative">
-                  <button
-                    className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
-                    onClick={handleShare}
-                  >
-                    <Share2 size={18} />
-                    Share
-                  </button>
-                  {shareCopied && (
-                    <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
-                      Link Copied!
-                    </span>
-                  )}
+                <div className="flex items-center">
+                  <ShareMenu 
+                    title={blog.title} 
+                    url={shareUrl}
+                    requireSubscription={!subscriberEmail || !subscriberName}
+                    onSubscribeRequired={() => setShowModal(true)}
+                  />
                 </div>
+
               </div>
 
               {/* Mobile View - Primary action + dropdown */}
@@ -392,21 +396,14 @@ export default function FromBookPage() {
                       >
                         Comments
                       </button>
-                      <button
-                        className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition flex items-center gap-2"
-                        onClick={() => {
-                          handleShare();
-                          setShowDropdown(false);
-                        }}
-                      >
-                        <Share2 size={16} />
-                        Share
-                      </button>
-                      {shareCopied && (
-                        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow whitespace-nowrap">
-                          Link Copied!
-                        </div>
-                      )}
+                       <div className="flex items-center ml-4">
+                        <ShareMenu 
+                          title={blog.title} 
+                          url={shareUrl}
+                          requireSubscription={!subscriberEmail || !subscriberName}
+                          onSubscribeRequired={() => setShowModal(true)}
+                        />
+                      </div>
                     </div>
                   )}
                 </div>
@@ -539,7 +536,7 @@ export default function FromBookPage() {
         className="max-w-[95vw] md:max-w-[80%] mx-auto flex flex-col lg:flex-row gap-6 lg:gap-8 px-2 md:px-4 lg:px-0 mt-6 lg:mt-10 mb-10"
       >
         {/* LEFT: POSTS */}
-        <div className="flex-1 space-y-6 lg:space-y-8">
+        <div className="flex-1 space-y-6 lg:space-y-8 pb-20">
           {loadingBlogs ? (
             <div className="col-span-full text-center text-gray-400 py-16 lg:py-24">
               Loading...

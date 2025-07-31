@@ -74,17 +74,23 @@ app.get('/api/google/callback',
       const name = encodeURIComponent(req.user?.name || req.user?.displayName || "");
       const email = encodeURIComponent(req.user?.email || req.user?.emails?.[0]?.value || "");
 
+      const isProduction = process.env.NODE_ENV === "production";
+      const CLIENT_URL = isProduction 
+        ? "https://ideasbangladesh.com"  
+        : "http://localhost:3000";
+
       if (name && email) {
-        res.redirect(`http://localhost:3000/auth-success?name=${name}&email=${email}`);
+        res.redirect(`${CLIENT_URL}/auth-success?name=${name}&email=${email}`);
       } else {
-        res.redirect('http://localhost:3000/auth-success?error=missing_data');
+        res.redirect(`${CLIENT_URL}/auth-success?error=missing_data`);
       }
     } catch (error) {
       console.error('Auth callback error:', error);
-      res.redirect('http://localhost:3000/auth-success?error=server_error');
+      res.redirect(`${CLIENT_URL}/auth-success?error=server_error`);
     }
   }
 );
+
 
 
 app.get('auth/failure',
