@@ -483,12 +483,12 @@ export default function BanglaBlogs() {
                             </svg>
                         </span>
                         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-                            অনুভূতির পাতা
+                            বাংলা ব্লগসমূহ
                         </h1>
                     </div>
-                    <p className="text-gray-600 text-lg max-w-2xl mb-6">
+                    {/* <p className="text-gray-600 text-lg max-w-2xl mb-6">
                         লেখা হল অনুভূতির সেতু, যা হৃদয় থেকে হৃদয়ে পৌঁছে দেয়।
-                    </p>
+                    </p> */}
                     <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
                         <motion.input
                             initial={{ opacity: 0, x: 20 }}
