@@ -20,20 +20,20 @@ export default function AdminDashboard() {
   const [newCat, setNewCat] = useState("");
   const [catLoading, setCatLoading] = useState(false);
   const router = useRouter();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
   const [subscribers, setSubscribers] = useState([]);
-const [showSubscribers, setShowSubscribers] = useState(false);
+  const [showSubscribers, setShowSubscribers] = useState(false);
 
-useEffect(() => {
-  // Load subscribers only when modal is opened (or you can preload if you want)
-  if (showSubscribers) {
-    axios.get(`${apiUrl}/subscribers`)
-      .then(res => setSubscribers(res.data))
-      .catch(() => setSubscribers([]));
-  }
-}, [showSubscribers]);
+  useEffect(() => {
+    // Load subscribers only when modal is opened (or you can preload if you want)
+    if (showSubscribers) {
+      axios.get(`${apiUrl}/subscribers`)
+        .then(res => setSubscribers(res.data))
+        .catch(() => setSubscribers([]));
+    }
+  }, [showSubscribers]);
 
 
   useEffect(() => {
@@ -229,7 +229,7 @@ useEffect(() => {
         setShowModal(false);
         setSuccess("");
       }, 1000);
-      setBlogs((prev) => [...prev, form]); 
+      setBlogs((prev) => [...prev, form]);
     } catch (err) {
       setError(err.response?.data?.message || "Failed to create blog.");
     } finally {
@@ -253,28 +253,28 @@ useEffect(() => {
           <div className="flex flex-col md:flex-row gap-3 mt-5 md:mt-0">
             {/* New Buttons */}
             <Link href={"/admin/dashboard/create-blog"}>
-            <button
-              className="bg-green-600 text-white px-4 py-2 rounded font-semibold shadow hover:bg-green-700 transition"
-              
-            >
-              Create Blog
-            </button>
-            
+              <button
+                className="bg-green-600 text-white px-4 py-2 rounded font-semibold shadow hover:bg-green-700 transition"
+
+              >
+                Create Blog
+              </button>
+
             </Link>
-            
+
             <button
               className="bg-green-100 text-green-800 px-4 py-2 rounded font-semibold shadow hover:bg-green-200 transition flex items-center gap-2"
               onClick={() => setCatModal(true)}
             >
-             Manage Categories
+              Manage Categories
             </button>
             <Link href="/admin/dashboard/newsletter">
-            <button
-              className="bg-blue-200 text-blue-800 px-4 py-2 rounded font-semibold shadow hover:bg-blue-300 transition"
-            >
-              Newsletter
-              
-            </button>
+              <button
+                className="bg-blue-200 text-blue-800 px-4 py-2 rounded font-semibold shadow hover:bg-blue-300 transition"
+              >
+                Newsletter
+
+              </button>
             </Link>
             <Link href="/admin/dashboard/ads">
               <button className="bg-green-200 text-green-800 px-4 py-2 rounded font-semibold shadow hover:bg-green-300 transition">
@@ -359,22 +359,22 @@ useEffect(() => {
                   />
                 </div> */}
                 <div className="mb-3">
-                    <label className="font-semibold">Description</label>
-                    <Editor
-                      apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
-                      value={form.description}
-                      init={{
-                          plugins: 'image table lists link code',
-                          toolbar:
-                            'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code',
-                          automatic_uploads: true,
-                          images_upload_url: `${apiUrl}/upload-inline-image`,
-                          paste_data_images: true,
-                        }}
-                      onEditorChange={(content) => setForm({ ...form, description: content })}
-                    />
+                  <label className="font-semibold">Description</label>
+                  <Editor
+                    apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
+                    value={form.description}
+                    init={{
+                      plugins: 'image table lists link code',
+                      toolbar:
+                        'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code',
+                      automatic_uploads: true,
+                      images_upload_url: `${apiUrl}/upload-inline-image`,
+                      paste_data_images: true,
+                    }}
+                    onEditorChange={(content) => setForm({ ...form, description: content })}
+                  />
 
-                  </div>
+                </div>
                 <div className="mb-3">
                   <label className="font-semibold">Image</label>
                   <input
@@ -514,13 +514,13 @@ useEffect(() => {
               onChange={e => setSearch(e.target.value)}
             />
           </div>
-           <button
+          <button
             className="ml-2 flex items-center bg-green-100 text-green-900 font-semibold px-4 py-2 rounded-lg shadow hover:bg-green-200 transition border border-green-200"
             onClick={() => setShowSubscribers(true)}
             title="Show Subscribers"
             type="button"
           >
-            Subscribers: 
+            Subscribers:
             <span className="ml-2 font-bold">{subscribers.length > 0 ? subscribers.length : "..."}</span>
           </button>
         </div>
@@ -596,12 +596,21 @@ useEffect(() => {
                             value={editForm.summary}
                             onChange={handleEditChange}
                           />
-                          <textarea
-                            className="w-full p-3 border rounded-lg resize-y min-h-[180px] focus:outline-none focus:ring focus:ring-green-200 transition"
-                            name="description"
-                            value={editForm.description}
-                            onChange={handleEditChange}
-                          />
+                          <div className="mb-2">
+                            <Editor
+                              apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
+                              value={editForm.description}
+                              init={{
+                                plugins: 'image table lists link code',
+                                toolbar: 'undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code',
+                                automatic_uploads: true,
+                                images_upload_url: `${apiUrl}/upload-inline-image`,
+                                paste_data_images: true,
+                                height: 200
+                              }}
+                              onEditorChange={(content) => setEditForm({ ...editForm, description: content })}
+                            />
+                          </div>
                           <select
                             className="border px-2 py-1 rounded"
                             name="category"
@@ -658,54 +667,54 @@ useEffect(() => {
         </div>
       </div>
       <AnimatePresence>
-  {showSubscribers && (
-    <>
-      <motion.div
-        className="fixed inset-0 bg-black/40 z-40 backdrop-blur-[2px]"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => setShowSubscribers(false)}
-      />
-      <motion.div
-        className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg"
-        initial={{ opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.94 }}
-        transition={{ type: "spring", stiffness: 350, damping: 28 }}
-      >
-        <div className="flex justify-between items-center mb-5">
-          <h2 className="text-xl font-bold text-green-700">Subscribers</h2>
-          <button onClick={() => setShowSubscribers(false)}>
-            <X size={26} className="text-gray-400 hover:text-green-700" />
-          </button>
-        </div>
-        <div className="max-h-72 overflow-y-auto">
-          {subscribers.length === 0 ? (
-            <div className="text-gray-400 text-center py-8">No subscribers found.</div>
-          ) : (
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-green-800">
-                  <th className="text-left py-2">Name</th>
-                  <th className="text-left py-2">Email</th>
-                </tr>
-              </thead>
-              <tbody>
-                {subscribers.map(sub => (
-                  <tr key={sub._id}>
-                    <td className="py-2">{sub.name}</td>
-                    <td className="py-2">{sub.email}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
+        {showSubscribers && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/40 z-40 backdrop-blur-[2px]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowSubscribers(false)}
+            />
+            <motion.div
+              className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg"
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.94 }}
+              transition={{ type: "spring", stiffness: 350, damping: 28 }}
+            >
+              <div className="flex justify-between items-center mb-5">
+                <h2 className="text-xl font-bold text-green-700">Subscribers</h2>
+                <button onClick={() => setShowSubscribers(false)}>
+                  <X size={26} className="text-gray-400 hover:text-green-700" />
+                </button>
+              </div>
+              <div className="max-h-72 overflow-y-auto">
+                {subscribers.length === 0 ? (
+                  <div className="text-gray-400 text-center py-8">No subscribers found.</div>
+                ) : (
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="text-green-800">
+                        <th className="text-left py-2">Name</th>
+                        <th className="text-left py-2">Email</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {subscribers.map(sub => (
+                        <tr key={sub._id}>
+                          <td className="py-2">{sub.name}</td>
+                          <td className="py-2">{sub.email}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
 
     </div>
   );
