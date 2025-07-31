@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { UploadCloud, X, Loader2, CheckCircle2, AlertTriangle } from "lucide-react";
 import Navbar from "../../components/Navbar/page";
+import { Editor } from "@tinymce/tinymce-react";
 
 export default function SubmitIdeaPage() {
   const [image, setImage] = useState(null);
@@ -11,8 +12,12 @@ export default function SubmitIdeaPage() {
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
   const [subscriberName, setSubscriberName] = useState("");
+  const [form, setForm] = useState({
+    title: "",
+    description: ""
+  });
   const fileRef = useRef();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
   // Check subscription on mount
   useEffect(() => {
     const name = localStorage.getItem("subscriberName");
@@ -46,8 +51,8 @@ export default function SubmitIdeaPage() {
 
     try {
       const formData = new FormData();
-      formData.append("title", e.target.title.value);
-      formData.append("description", e.target.description.value);
+      formData.append("title", form.title);
+      formData.append("description", form.description);
       formData.append("author", subscriberName); // Attach author
       if (image) formData.append("image", image);
 
@@ -60,7 +65,7 @@ export default function SubmitIdeaPage() {
 
       if (res.ok) {
         setSuccess("Your idea has been submitted for review!");
-        e.target.reset();
+        setForm({ title: "", description: "" }); // Reset form state
         removeImage();
       } else {
         setError(data.message || "Submission failed. Please try again.");
@@ -101,7 +106,7 @@ export default function SubmitIdeaPage() {
     );
   }
 
-  // If subscribed, show the form as before
+
   return (
     <div className="bg-[#EDF4EE] min-h-screen font-[Nunito]">
       <Navbar />
@@ -148,23 +153,34 @@ export default function SubmitIdeaPage() {
                 name="title"
                 type="text"
                 required
+                value={form.title}
+                onChange={(e) => setForm({ ...form, title: e.target.value })}
                 placeholder="Enter a title"
                 className="w-full px-4 py-3 rounded-lg border border-green-100 focus:border-[#7ED6B2] focus:ring-2 focus:ring-[#D6F3E9] bg-green-50/30 transition"
               />
             </div>
-            <div>
+            <div className="mb-4">
               <label className="block text-sm font-bold mb-1 text-gray-700">Description</label>
-              <textarea
-                name="description"
-                required
-                rows={5}
-                placeholder="Describe your idea in detail..."
-                className="w-full px-4 py-3 rounded-lg border border-green-100 focus:border-[#7ED6B2] focus:ring-2 focus:ring-[#D6F3E9] bg-green-50/30 transition resize-none"
+              <Editor
+                apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
+                value={form.description}
+                init={{
+                  plugins: "image table lists link code",
+                  toolbar:
+                    "undo redo | bold italic underline | forecolor backcolor | alignleft aligncenter alignright | bullist numlist | table image link code",
+                  automatic_uploads: true,
+                  images_upload_url:
+                    `${apiUrl}/upload-inline-image`,
+                  paste_data_images: true,
+                }}
+                onEditorChange={(content) =>
+                  setForm({ ...form, description: content })
+                }
               />
             </div>
             {/* Image upload */}
             <div>
-              <label className="block text-sm font-bold mb-2 text-gray-700">Image (optional)</label>
+              <label className="block text-sm font-bold mb-2 text-gray-700">Main Image (optional)</label>
               <div className="flex gap-4 items-center">
                 <label className="cursor-pointer flex items-center gap-2 bg-green-100 px-4 py-2 rounded-lg text-green-700 font-medium hover:bg-green-200 transition border border-green-200 shadow-sm">
                   <UploadCloud size={20} /> {image ? "Change Image" : "Upload Image"}
