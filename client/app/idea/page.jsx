@@ -6,10 +6,10 @@ import { ArrowUpRight, X, ArrowLeft, ThumbsUp } from "lucide-react";
 import axios from "axios";
 import Footer from "../../components/Footer/page";
 import SubscribeButton from "../../components/SubscribeButton/page";
+import ShareMenu from "../../components/ShareMenu/page";
 
 export default function ApprovedIdeasPage() {
   const [ideas, setIdeas] = useState([]);
-  const [shareCopiedId, setShareCopiedId] = useState(null);
   const [likedIdeas, setLikedIdeas] = useState({}); // Track likes for each idea
 
   const [ads, setAds] = useState([]);
@@ -19,7 +19,7 @@ export default function ApprovedIdeasPage() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const ideasPerPage = 5;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const router = useRouter();
 
@@ -78,32 +78,6 @@ export default function ApprovedIdeasPage() {
       router.push(`/idea/${id}`);
     } else {
       setShowModal(true);
-    }
-  };
-
-  const handleShare = async (idea) => {
-    const shareUrl = `${window.location.origin}/idea/${idea._id}`;
-    const shareData = {
-      title: idea.title,
-      text: idea.description?.slice(0, 100) || "",
-      url: shareUrl,
-    };
-
-    if (navigator.share) {
-      try {
-        await navigator.share(shareData);
-        return;
-      } catch (err) {
-        // fallback below
-      }
-    }
-
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setShareCopiedId(idea._id);
-      setTimeout(() => setShareCopiedId(null), 1600);
-    } catch (err) {
-      alert("Link: " + shareUrl);
     }
   };
 
@@ -287,44 +261,23 @@ export default function ApprovedIdeasPage() {
                       </button>
                       <button
                         onClick={() => handleLike(idea._id)}
-                        className="flex items-center gap-1 px-3 py-2 rounded hover:bg-green-50 transition border border-gray-200"
+                        className="flex items-center gap-1 px-3 py-2 rounded hover:bg-green-50 transition"
                         title="Like this idea"
                       >
                         <span className={`text-lg ${likedIdeas[idea._id]?.liked ? "text-green-600" : "text-gray-500"}`}>
-                          👍
+                          {likedIdeas[idea._id]?.liked ? "💚" : "👍"}
                         </span>
                         <span className="text-sm font-medium text-gray-700">
                           {likedIdeas[idea._id]?.likes || 0}
                         </span>
                       </button>
-                      <div className="relative">
-                        <button
-                          className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
-                          onClick={() => handleShare(idea)}
-                          aria-label="Share"
-                          type="button"
-                        >
-                          <svg
-                            width={18}
-                            height={18}
-                            fill="none"
-                            stroke="#389a6a"
-                            strokeWidth={2.1}
-                            viewBox="0 0 24 24"
-                          >
-                            <circle cx={6} cy={12} r={2} />
-                            <circle cx={18} cy={6} r={2} />
-                            <circle cx={18} cy={18} r={2} />
-                            <path d="M8.59 13.51l6.83 3.98" />
-                            <path d="M15.42 6.51l-6.83 3.98" />
-                          </svg>
-                          Share
-                        </button>
-                        {shareCopiedId === idea._id && (
-                          <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
-                            Link Copied!
-                          </span>
-                        )}
+                      <div className="flex items-center">
+                        <ShareMenu
+                          title={idea.title}
+                          url={`${window.location.origin}/idea/${idea._id}`}
+                          requireSubscription={!localStorage.getItem("subscriberEmail") || !localStorage.getItem("subscriberName")}
+                          onSubscribeRequired={() => setShowModal(true)}
+                        />
                       </div>
                     </div>
                   </div>
