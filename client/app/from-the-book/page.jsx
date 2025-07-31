@@ -152,7 +152,7 @@ export default function FromBookPage() {
       }
 
       try {
-        const res = await axios.post(`${apiUrl}/blogs/english/${blog._id}/like`, {
+        const res = await axios.post(`${apiUrl}/blogs/${blog._id}/like`, {
           email: subscriberEmail,
         });
 
@@ -189,13 +189,13 @@ export default function FromBookPage() {
         alert("Link: " + shareUrl);
       }
     };
-      const handleShareClick = () => {
-    if (!subscriberEmail || !subscriberName) {
-      setShowModal(true); 
-      return false; 
-    }
-    return true;
-  };
+    const handleShareClick = () => {
+      if (!subscriberEmail || !subscriberName) {
+        setShowModal(true);
+        return false;
+      }
+      return true;
+    };
 
 
     const fetchComments = async () => {
@@ -308,7 +308,7 @@ export default function FromBookPage() {
 
             {/* Action Buttons */}
             <div className="flex items-center justify-between mt-auto">
-              {/* Desktop View - All buttons visible */}
+              {/* Desktop View */}
               <div className="hidden sm:flex flex-wrap items-center gap-2">
                 <button
                   className="bg-green-100 text-green-800 px-5 py-2 rounded font-medium hover:bg-green-200 transition text-sm"
@@ -334,22 +334,21 @@ export default function FromBookPage() {
                   title="Like this blog"
                 >
                   <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
-                    👍
+                    {liked ? "💚" : "👍"}
                   </span>
                   <span className="text-sm font-medium text-gray-700">{likes}</span>
                 </button>
                 <div className="flex items-center">
-                  <ShareMenu 
-                    title={blog.title} 
+                  <ShareMenu
+                    title={blog.title}
                     url={shareUrl}
                     requireSubscription={!subscriberEmail || !subscriberName}
                     onSubscribeRequired={() => setShowModal(true)}
                   />
                 </div>
-
               </div>
 
-              {/* Mobile View - Primary action + dropdown */}
+              {/* Mobile View */}
               <div className="flex sm:hidden items-center gap-2 w-full">
                 <button
                   className="bg-green-200 text-green-900 px-4 py-2 rounded font-semibold hover:bg-green-300 transition flex items-center gap-2 text-sm flex-1"
@@ -363,7 +362,7 @@ export default function FromBookPage() {
                   title="Like this blog"
                 >
                   <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
-                    👍
+                    {liked ? "💚" : "👍"}
                   </span>
                   <span className="text-sm font-medium text-gray-700">{likes}</span>
                 </button>
@@ -396,9 +395,9 @@ export default function FromBookPage() {
                       >
                         Comments
                       </button>
-                       <div className="flex items-center ml-4">
-                        <ShareMenu 
-                          title={blog.title} 
+                      <div className="flex items-center ml-4">
+                        <ShareMenu
+                          title={blog.title}
                           url={shareUrl}
                           requireSubscription={!subscriberEmail || !subscriberName}
                           onSubscribeRequired={() => setShowModal(true)}

@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ArrowUpRight, Image as ImageIcon, ThumbsUp, Share2, X, MoreVertical } from "lucide-react";
 import axios from "axios";
 import Footer from "../../components/Footer/page";
+import ShareMenu from "../../components/ShareMenu/page";
 // import BlogCard from "../../components/BlogCard/page";
 import SubscribeButton from "../../components/SubscribeButton/page";
 
@@ -64,7 +65,8 @@ export default function BanglaBlogs() {
     const [currentSummary, setCurrentSummary] = useState("");
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
+    const [showModal, setShowModal] = useState(false);
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     // Fetch blogs and ads from API
     useEffect(() => {
         setLoadingBlogs(true);
@@ -112,9 +114,8 @@ export default function BanglaBlogs() {
     };
 
 
-    function BlogCard({ blog, handleShowSummary }) {
+    function BlogCard({ blog, handleShowSummary, setShowModal }) {
         const router = useRouter();
-        const [showModal, setShowModal] = useState(false);
         const [hovered, setHovered] = useState(false);
         const [shareCopied, setShareCopied] = useState(false);
         const [commentModal, setCommentModal] = useState(false);
@@ -123,6 +124,7 @@ export default function BanglaBlogs() {
         const [likes, setLikes] = useState(blog.likes || 0);
         const [liked, setLiked] = useState(false);
         const [showDropdown, setShowDropdown] = useState(false);
+        const shareUrl = `${window.location.origin}/Bangla-blogs/${blog._id}`;
 
         const subscriberEmail =
             typeof window !== "undefined" && localStorage.getItem("subscriberEmail");
@@ -144,13 +146,13 @@ export default function BanglaBlogs() {
         }, [blog.likedBy, subscriberEmail]);
 
         const handleLike = async () => {
-            if (!subscriberEmail) {
-                alert("ব্লগ লাইক করতে আপনাকে অবশ্যই সাবস্ক্রাইব করতে হবে");
+            if (!subscriberEmail || !subscriberName) {
+                setShowModal(true);
                 return;
             }
 
             try {
-                const res = await axios.post(`${apiUrl}/blogs/bangla/${blog._id}/like`, {
+                const res = await axios.post(`${apiUrl}/blogs/${blog._id}/like`, {
                     email: subscriberEmail,
                 });
 
@@ -195,6 +197,10 @@ export default function BanglaBlogs() {
         };
 
         const handleCommentSubmit = async () => {
+            if (!subscriberEmail || !subscriberName) {
+                setShowModal(true);
+                return;
+            }
             if (!newComment.trim()) return;
             try {
                 const res = await axios.post(`${apiUrl}/comments`, {
@@ -211,6 +217,10 @@ export default function BanglaBlogs() {
         };
 
         const openCommentModal = () => {
+            if (!subscriberEmail || !subscriberName) {
+                setShowModal(true);
+                return;
+            }
             setCommentModal(true);
             fetchComments();
         };
@@ -313,23 +323,17 @@ export default function BanglaBlogs() {
                                     title="এই ব্লগটি লাইক করুন"
                                 >
                                     <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
-                                        👍
+                                        {liked ? "💚" : "👍"}
                                     </span>
                                     <span className="text-sm font-medium text-gray-700">{likes}</span>
                                 </button>
-                                <div className="relative">
-                                    <button
-                                        className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded hover:bg-green-50 transition text-sm"
-                                        onClick={handleShare}
-                                    >
-                                        <Share2 size={18} />
-                                        শেয়ার
-                                    </button>
-                                    {shareCopied && (
-                                        <span className="absolute -top-7 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow">
-                                            লিংক কপি হয়েছে!
-                                        </span>
-                                    )}
+                                <div className="flex items-center">
+                                    <ShareMenu
+                                        title={blog.title}
+                                        url={shareUrl}
+                                        requireSubscription={!subscriberEmail || !subscriberName}
+                                        onSubscribeRequired={() => setShowModal(true)}
+                                    />
                                 </div>
                             </div>
 
@@ -347,7 +351,7 @@ export default function BanglaBlogs() {
                                     title="এই ব্লগটি লাইক করুন"
                                 >
                                     <span className={`text-lg ${liked ? "text-green-600" : "text-gray-500"}`}>
-                                        👍
+                                        {liked ? "💚" : "👍"}
                                     </span>
                                     <span className="text-sm font-medium text-gray-700">{likes}</span>
                                 </button>
@@ -380,21 +384,14 @@ export default function BanglaBlogs() {
                                             >
                                                 মন্তব্য
                                             </button>
-                                            <button
-                                                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-green-50 transition flex items-center gap-2"
-                                                onClick={() => {
-                                                    handleShare();
-                                                    setShowDropdown(false);
-                                                }}
-                                            >
-                                                <Share2 size={16} />
-                                                শেয়ার
-                                            </button>
-                                            {shareCopied && (
-                                                <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-green-500 text-white text-xs rounded px-2 py-1 shadow whitespace-nowrap">
-                                                    লিংক কপি হয়েছে!
-                                                </div>
-                                            )}
+                                            <div className="flex items-center ml-4">
+                                                <ShareMenu
+                                                    title={blog.title}
+                                                    url={shareUrl}
+                                                    requireSubscription={!subscriberEmail || !subscriberName}
+                                                    onSubscribeRequired={() => setShowModal(true)}
+                                                />
+                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -538,7 +535,7 @@ export default function BanglaBlogs() {
                         </div>
                     ) : (
                         <>
-                            {paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} />)}
+                            {paginatedBlogs.map((blog) => <BlogCard key={blog._id} blog={blog} handleShowSummary={handleShowSummary} setShowModal={setShowModal} />)}
 
                             {/* Pagination - Shows after posts */}
                             {totalPages > 1 && (
@@ -650,6 +647,45 @@ export default function BanglaBlogs() {
                                         {currentSummary}
                                     </motion.p>
                                 </div>
+                            </div>
+                        </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+            {/* MODAL for subscribe */}
+            <AnimatePresence>
+                {showModal && (
+                    <>
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+                            onClick={() => setShowModal(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.96 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.94 }}
+                            transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                            className="fixed z-50 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl p-8 w-full max-w-md"
+                        >
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold text-green-700">
+                                    সাবস্ক্রিপশন প্রয়োজন
+                                </h2>
+                                <button onClick={() => setShowModal(false)}>
+                                    <X size={26} className="text-gray-400 hover:text-green-700" />
+                                </button>
+                            </div>
+                            <p className="text-gray-700 mb-6">
+                                সম্পূর্ণ নিবন্ধ পড়তে আপনাকে সাবস্ক্রাইব করতে হবে। এক্সক্লুসিভ কন্টেন্ট অ্যাক্সেস পেতে দয়া করে সাবস্ক্রাইব করুন!
+                            </p>
+                            <div
+                                className="w-full py-2 rounded font-bold"
+                                onClick={() => setShowModal(false)}
+                            >
+                                <SubscribeButton />
                             </div>
                         </motion.div>
                     </>
