@@ -56,15 +56,15 @@ export default function HomePage() {
               className="btn-shimmer bg-gradient-to-r from-[#91C5A9] to-[#74eecb] px-6 py-3 md:px-5 md:py-2 rounded-2xl text-black font-semibold shadow-lg border border-green-200 transition-all duration-300 w-full sm:w-auto"
               style={{ position: 'relative', overflow: 'hidden' }}
             >
-              <span className="relative z-10">Start Reading</span>
+              <span className="relative z-10">English Ideas</span>
             </motion.a>
             <motion.a
               whileHover={{ scale: 1.06 }}
-              href="/idea-submission"
+              href="/Bangla-blogs"
               className="btn-shimmer border-2 border-green-400 px-6 py-3 md:px-5 md:py-2 rounded-2xl text-green-700 font-semibold bg-white/80 shadow-lg transition-all duration-300 w-full sm:w-auto"
               style={{ position: 'relative', overflow: 'hidden' }}
             >
-              <span className="relative z-10">Share Ideas</span>
+              <span className="relative z-10">Bangla Ideas</span>
             </motion.a>
 
           </div>

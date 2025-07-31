@@ -510,7 +510,7 @@ export default function BanglaBlogs() {
                             animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: 0.5 }}
                             href="/from-the-book"
-                            className="bg-green-600 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base"
+                            className="bg-green-400 text-white px-4 md:px-6 py-2.5 md:py-3 rounded-lg font-semibold hover:bg-green-600 transition flex items-center gap-2 whitespace-nowrap text-sm md:text-base"
                         >
                             English
                             <ArrowUpRight size={16} />
