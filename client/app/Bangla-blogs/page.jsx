@@ -483,7 +483,7 @@ export default function BanglaBlogs() {
                             </svg>
                         </span>
                         <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
-                            বাংলা ব্লগসমূহ
+                            বাংলা আইডিয়াসমূহ
                         </h1>
                     </div>
                     {/* <p className="text-gray-600 text-lg max-w-2xl mb-6">
