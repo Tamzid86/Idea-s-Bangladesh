@@ -247,7 +247,7 @@ export default function BanglaBlogs() {
                         y: -3,
                         boxShadow: "0 8px 32px rgba(30,100,60,0.09)",
                     }}
-                    className="flex flex-col sm:flex-row w-full bg-white rounded-xl overflow-hidden shadow-sm border transition-all duration-200"
+                    className="relative flex flex-col sm:flex-row w-full bg-white rounded-xl overflow-visible shadow-sm border transition-all duration-200"
                     onMouseEnter={() => setHovered(true)}
                     onMouseLeave={() => setHovered(false)}
                 >
