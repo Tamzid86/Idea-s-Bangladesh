@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [editImage, setEditImage] = useState(null); 
   const [deleting, setDeleting] = useState(false);
   const [categories, setCategories] = useState([]);
   const [catModal, setCatModal] = useState(false);
@@ -27,7 +28,6 @@ export default function AdminDashboard() {
   const [showSubscribers, setShowSubscribers] = useState(false);
 
   useEffect(() => {
-    // Load subscribers only when modal is opened (or you can preload if you want)
     if (showSubscribers) {
       axios.get(`${apiUrl}/subscribers`)
         .then(res => setSubscribers(res.data))
@@ -103,27 +103,59 @@ export default function AdminDashboard() {
       category: blog.category || ""
     });
   };
-  const cancelEdit = () => setEditId(null);
+  const cancelEdit = () => {
+    setEditId(null);
+    setEditImage(null);
+  };
 
   const handleEditChange = (e) => {
-    setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    if (e.target.name === "image") {
+      setEditImage(e.target.files[0]);
+    } else {
+      setEditForm({ ...editForm, [e.target.name]: e.target.value });
+    }
   };
 
   const handleEditSubmit = async (e, id) => {
     e.preventDefault();
     const token = localStorage.getItem("adminToken");
     try {
-      await axios.put(
-        `${apiUrl}/blogs/${id}`,
-        editForm,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
+      let updateData = { ...editForm };
+
+      // If there's a new image, upload it using FormData
+      if (editImage) {
+        const formData = new FormData();
+        Object.keys(editForm).forEach(key => {
+          formData.append(key, editForm[key]);
+        });
+        formData.append("image", editImage);
+
+        await axios.put(
+          `${apiUrl}/blogs/${id}`,
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "multipart/form-data"
+            }
+          }
+        );
+      } else {
+        // No new image, just update other fields
+        await axios.put(
+          `${apiUrl}/blogs/${id}`,
+          updateData,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      }
+
       setBlogs((prev) =>
         prev.map((b) =>
           b._id === id ? { ...b, ...editForm, updatedAt: new Date() } : b
         )
       );
       setEditId(null);
+      setEditImage(null); // Reset edit image
     } catch {
       alert("Failed to update blog.");
     }
@@ -610,6 +642,21 @@ export default function AdminDashboard() {
                               }}
                               onEditorChange={(content) => setEditForm({ ...editForm, description: content })}
                             />
+                          </div>
+                          <div className="mb-2">
+                            <label className="block text-xs font-semibold mb-1">Update Image (optional)</label>
+                            <input
+                              type="file"
+                              name="image"
+                              accept="image/*"
+                              onChange={handleEditChange}
+                              className="w-full text-xs"
+                            />
+                            {editImage && (
+                              <div className="text-xs text-green-600 mt-1">
+                                New image selected: {editImage.name}
+                              </div>
+                            )}
                           </div>
                           <select
                             className="border px-2 py-1 rounded"

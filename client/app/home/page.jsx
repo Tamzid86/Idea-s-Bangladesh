@@ -337,7 +337,7 @@ export default function HomePage() {
             we're here to support you.
           </p>
           <a
-            href="mailto:ideas.bangladesh01@gmail.com"
+            href="mailto:ideasbangladesh2025@gmail.com"
             className="inline-block px-6 py-3 bg-gradient-to-r from-[#91C5A9] to-[#74eecb] text-black rounded-full font-semibold hover:opacity-90 transition"
           >
             Contact Us

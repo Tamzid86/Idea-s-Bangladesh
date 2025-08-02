@@ -96,7 +96,7 @@ const updateBlog = async (req, res) => {
     const { title, description, summary, author, read_time, category } = req.body;
 
     if (!title || !description || !summary) {
-      return res.status(400).json({ message: "Title, description, and summary are required" });
+      return res.status(400).json({ message: "Title, description and summary are required" });
     }
 
     let updateFields = {
