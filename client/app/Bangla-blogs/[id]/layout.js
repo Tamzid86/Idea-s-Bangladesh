@@ -1,18 +1,18 @@
 export async function generateMetadata({ params }) {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/blogs/${params.id}`, {
-        cache: "no-store", // ensures fresh data
+        cache: "no-store",
       });
       if (!res.ok) throw new Error("Blog fetch failed");
   
       const blog = await res.json();
   
       function stripHtml(html) {
-        return html.replace(/<[^>]*>?/gm, ''); // removes all HTML tags
+        return html.replace(/<[^>]*>?/gm, ''); 
       }
   
-      const cleanDescription = stripHtml(blog.summary || blog.description || "Read this blog");
-      const imageUrl = blog.imageUrl || "https://ideasbangladesh.com/default-og-image.jpg"; 
+      const cleanDescription = stripHtml(blog.summary || blog.description || "এই ব্লগটি পড়ুন");
+      const imageUrl = blog.imageUrl || "https://ideasbangladesh.com/default-og-image.jpg";
   
       return {
         title: blog.title,
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }) {
         openGraph: {
           title: blog.title,
           description: cleanDescription,
-          url: `https://ideasbangladesh.com/from-the-book/${blog._id}`,
+          url: `https://ideasbangladesh.com/Bangla-blogs/${blog._id}`,
           siteName: "Idea's Bangladesh",
           type: "article",
           images: [
@@ -43,10 +43,10 @@ export async function generateMetadata({ params }) {
       console.error("Metadata generation failed:", error);
       return {
         title: "Idea's Bangladesh",
-        description: "Empowering Bangladesh through innovation.",
+        description: "বাংলাদেশকে উদ্ভাবনের মাধ্যমে ক্ষমতায়ন করছি।",
         openGraph: {
           title: "Idea's Bangladesh",
-          description: "Empowering Bangladesh through innovation.",
+          description: "বাংলাদেশকে উদ্ভাবনের মাধ্যমে ক্ষমতায়ন করছি।",
           url: `https://ideasbangladesh.com`,
           siteName: "Idea's Bangladesh",
           type: "website",
@@ -62,7 +62,7 @@ export async function generateMetadata({ params }) {
         twitter: {
           card: "summary_large_image",
           title: "Idea's Bangladesh",
-          description: "Empowering Bangladesh through innovation.",
+          description: "বাংলাদেশকে উদ্ভাবনের মাধ্যমে ক্ষমতায়ন করছি।",
           images: ["https://ideasbangladesh.com/default-og-image.jpg"],
         },
       };
