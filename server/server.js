@@ -131,7 +131,7 @@ cron.schedule('0 0 * * *', async () => {
   try {
     const now = new Date();
     const result = await Ad.deleteMany({ expiresAt: { $lt: now } });
-    console.log(`🗑️ Deleted ${result.deletedCount} expired ads`);
+    console.log(` Deleted ${result.deletedCount} expired ads`);
   } catch (error) {
     console.error('Error deleting expired ads:', error);
   }
