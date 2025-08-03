@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
         description: blog.description || "Read this interesting blog",
         url: `https://ideasbangladesh.com/from-the-book/${blog._id}`,
         siteName: "Idea's Bangladesh",
-        type: "idea",
+        type: "article",
       },
       twitter: {
         card: "summary",
