@@ -2,7 +2,6 @@
 import { use } from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Head from "next/head"; // ✅ Added Head for meta tags
 import { ArrowLeft } from "lucide-react";
 import axios from "axios";
 import jsPDF from "jspdf";
@@ -37,7 +36,6 @@ export default function BlogDetailsPage({ params }) {
   const [isSubscriber, setIsSubscriber] = useState(false);
   const router = useRouter();
   const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
-
   // Check subscription on mount
   useEffect(() => {
     const email = localStorage.getItem("subscriberEmail");
@@ -71,7 +69,7 @@ export default function BlogDetailsPage({ params }) {
       .catch(() => setLoading(false));
   }, [id]);
 
-  // Download as PDF
+  // Download as PDF, styled like a blog post
   const handleDownloadPdf = async () => {
     if (!blog) return;
     const doc = new jsPDF({
@@ -82,6 +80,7 @@ export default function BlogDetailsPage({ params }) {
     const marginX = 40;
     let y = 50;
 
+    // Title (wrap)
     doc.setFontSize(24);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(30, 30, 30);
@@ -92,6 +91,7 @@ export default function BlogDetailsPage({ params }) {
       y += 28;
     }
 
+    // Category badge
     if (blog.category) {
       doc.setFontSize(11);
       doc.setTextColor(38, 126, 77);
@@ -99,6 +99,7 @@ export default function BlogDetailsPage({ params }) {
       doc.text(`[${blog.category}]`, marginX + 330, y - 28 * titleLines.length);
     }
 
+    // Author, date, read time
     doc.setFontSize(12);
     doc.setTextColor(120, 120, 120);
     doc.setFont("helvetica", "normal");
@@ -107,11 +108,13 @@ export default function BlogDetailsPage({ params }) {
     doc.text(formatDate(blog.createdAt), marginX + 340, y);
     y += 18;
 
+    // Horizontal line
     doc.setDrawColor(160, 220, 180);
     doc.setLineWidth(1);
     doc.line(marginX, y, marginX + 500, y);
     y += 18;
 
+    // Image (optional)
     if (blog.imageUrl) {
       try {
         const imgData = await toBase64(blog.imageUrl);
@@ -125,6 +128,7 @@ export default function BlogDetailsPage({ params }) {
       }
     }
 
+    // Summary
     doc.setFontSize(14);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(35, 120, 60);
@@ -141,6 +145,7 @@ export default function BlogDetailsPage({ params }) {
     }
     y += 10;
 
+    // Full Article or Subscribe Notice
     doc.setFontSize(15);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(35, 120, 60);
@@ -158,6 +163,7 @@ export default function BlogDetailsPage({ params }) {
         y += 16;
       }
     } else {
+      // Not a subscriber: show subscribe prompt instead
       doc.setTextColor(210, 60, 60);
       const subscribeMsg = "You need to subscribe to read the full article!";
       const subscribeLines = doc.splitTextToSize(subscribeMsg, 500);
@@ -189,28 +195,6 @@ export default function BlogDetailsPage({ params }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#f2fbf6] via-white to-[#f6faf7] font-[Nunito] py-6 select-none">
-      <Head>
-        <title>{blog.title}</title>
-        <meta name="description" content={blog.summary || "Read this blog"} />
-
-        {/* ✅ Open Graph */}
-        <meta property="og:title" content={blog.title} />
-        <meta property="og:description" content={blog.summary || "Read this interesting blog"} />
-        <meta property="og:url" content={`https://ideasbangladesh.com/from-the-book/${blog._id}`} />
-        <meta property="og:type" content="article" />
-        <meta property="og:site_name" content="Idea's Bangladesh" />
-        {blog.imageUrl && <meta property="og:image" content={blog.imageUrl} />}
-        {blog.imageUrl && <meta property="og:image:alt" content={blog.title} />}
-        <meta property="og:image:width" content="1200" />
-        <meta property="og:image:height" content="630" />
-
-        {/* ✅ Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={blog.title} />
-        <meta name="twitter:description" content={blog.summary || "Read this interesting blog"} />
-        {blog.imageUrl && <meta name="twitter:image" content={blog.imageUrl} />}
-      </Head>
-
       <style jsx global>{`
         .no-copy-protect,
         .no-copy-protect * {
@@ -221,7 +205,6 @@ export default function BlogDetailsPage({ params }) {
           pointer-events: auto !important;
         }
       `}</style>
-
       <div className="max-w-2xl mx-auto">
         {/* Back Button */}
         <button
@@ -230,6 +213,13 @@ export default function BlogDetailsPage({ params }) {
         >
           <ArrowLeft size={16} /> Back to From the Book
         </button>
+        {/* Download as PDF */}
+        {/* <button
+          onClick={handleDownloadPdf}
+          className="mb-5 ml-3 flex items-center gap-2 bg-green-200 text-green-900 px-4 py-2 rounded font-semibold hover:bg-green-300 transition"
+        >
+          Download as PDF
+        </button> */}
 
         {/* Top */}
         <div className="flex items-center gap-3 mb-2">
@@ -253,12 +243,12 @@ export default function BlogDetailsPage({ params }) {
             </span>
           )}
         </div>
-
         <h1 className="text-3xl md:text-3xl font-extrabold text-gray-900 mb-1">
           {blog.title}
         </h1>
         <div className="text-gray-600 text-sm mb-1">
-          <span className="font-semibold">Author:</span> {blog.author || "Admin"}
+          <span className="font-semibold">Author:</span>{" "}
+          {blog.author || "Admin"}
         </div>
 
         {/* Image */}
