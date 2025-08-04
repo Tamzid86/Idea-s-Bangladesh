@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
+import { Editor } from "@tinymce/tinymce-react";
 
 export default function NewsletterComposePage() {
   const [subject, setSubject] = useState("");
@@ -10,19 +11,19 @@ export default function NewsletterComposePage() {
   const [sending, setSending] = useState(false);
   const [result, setResult] = useState(null);
   const router = useRouter();
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL; 
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-   useEffect(() => {
-        const token = localStorage.getItem("adminToken");
-        if (!token) {
-          router.push("/admin");
-        }
-      }, []);
+  useEffect(() => {
+    const token = localStorage.getItem("adminToken");
+    if (!token) {
+      router.push("/admin");
+    }
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSending(true);
     setResult(null);
-    
+
 
     try {
       const res = await axios.post(`${apiUrl}/send-newsletter`, {
@@ -71,14 +72,28 @@ export default function NewsletterComposePage() {
         </label>
         <label className="font-semibold text-green-900 text-lg">
           Message
-          <textarea
-            className="block w-full mt-2 p-4 rounded-xl border border-green-300 min-h-[340px] resize-vertical focus:outline-none focus:ring-2 focus:ring-green-400 text-base leading-7"
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            required
-            placeholder="Write your email message here..."
-            disabled={sending}
-          />
+          <div className="mt-2">
+            <Editor
+              apiKey="savl4o4p433ju0hjmyzv5vjqb5u5fw3wrw4s6nhozac5253z"
+              value={content}
+              onEditorChange={(newContent) => setContent(newContent)}
+              init={{
+                height: 400,
+                menubar: false,
+                plugins: [
+                  'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview',
+                  'anchor', 'searchreplace', 'visualblocks', 'code', 'fullscreen',
+                  'insertdatetime', 'media', 'table', 'help', 'wordcount'
+                ],
+                toolbar: 'undo redo | blocks | bold italic forecolor | alignleft aligncenter ' +
+                  'alignright alignjustify | bullist numlist outdent indent | ' +
+                  'removeformat | help',
+                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+                disabled: sending
+              }}
+              disabled={sending}
+            />
+          </div>
         </label>
         <button
           type="submit"
@@ -89,9 +104,8 @@ export default function NewsletterComposePage() {
         </button>
         {result && (
           <div
-            className={`mt-3 p-4 rounded-xl text-center text-base font-medium shadow ${
-              result.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"
-            }`}
+            className={`mt-3 p-4 rounded-xl text-center text-base font-medium shadow ${result.success ? "bg-green-100 text-green-800" : "bg-red-100 text-red-700"
+              }`}
           >
             {result.message}
           </div>
